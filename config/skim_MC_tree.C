@@ -239,7 +239,7 @@ void add(TString input_dir, TString year, TString prod_mode, bool t_failed=true)
   vector<float> *ExtraLepPhi = 0;
   vector<int> *ExtraLepLepId = 0;
   vector<int> _lep_genindex, _lep_Hindex;
-  
+
   TBranch *ZZy = T->Branch("ZZy",&_ZZy,"ZZy/F");
   TBranch *lep_genindex = T->Branch("lep_genindex",&_lep_genindex);
   TBranch *lep_Hindex = T->Branch("lep_Hindex",&_lep_Hindex);
@@ -303,7 +303,7 @@ void add(TString input_dir, TString year, TString prod_mode, bool t_failed=true)
     passedFiducialSelection->Fill();
     passedFiducialSelection_NOISO->Fill();
     passedFullSelection->Fill();
-    
+
     GenLepSorted.clear();
     _GenLepPtSorted.clear();
     _GenLepEtaSorted.clear();
@@ -481,6 +481,7 @@ void skim_MC_tree (TString prod_mode = "ZH125", TString year = "2017"){
   oldtree->SetBranchStatus("ExtraLepLepId",1);
   oldtree->SetBranchStatus("PUWeight",1);
   oldtree->SetBranchStatus("genHEPMCweight",1);
+  oldtree->SetBranchStatus("genHEPMCweight_NNLO",1);
   oldtree->SetBranchStatus("overallEventWeight",1);
   oldtree->SetBranchStatus("L1prefiringWeight",1);
   oldtree->SetBranchStatus("dataMCWeight",1);
@@ -598,6 +599,7 @@ void skim_MC_tree (TString prod_mode = "ZH125", TString year = "2017"){
   oldtree_failed->SetBranchStatus("LHEweight_AsMZ_Dn",1);
   oldtree_failed->SetBranchStatus("PUWeight",1);
   oldtree_failed->SetBranchStatus("genHEPMCweight",1);
+  oldtree_failed->SetBranchStatus("genHEPMCweight_NNLO",1);
   oldtree_failed->SetBranchStatus("GENfinalState",1);
   oldtree_failed->SetBranchStatus("passedFiducialSelection_bbf",1);
   oldtree_failed->SetBranchStatus("GENlep_pt",1);

@@ -48,10 +48,12 @@ def weight(df, fail, xsec, gen, lumi, additional = None):
     coeff = (lumi * 1000 * xsec) / gen
     #Gen
     weight_gen = df.genHEPMCweight * df.PUWeight
+    # weight_gen = df.genHEPMCweight_NNLO
     weight_histo_gen = weight_gen * coeff
     #Reco
     if(fail == False):
         weight_reco = (df.overallEventWeight * df.L1prefiringWeight)
+        # weight_reco = (df.genHEPMCweight_NNLO * df.PUWeight * df.dataMCWeight)
         weight_histo_reco = weight_reco * coeff
     elif(fail == True):
         weight_reco = 0
@@ -185,7 +187,7 @@ def createDataframe(d_sig,fail,gen,xsec,signal,lumi):
     b_sig = ['EventNumber','GENmass4l', 'GENpT4l', 'GENrapidity4l', 'GENeta4l',
              'GENlep_id', 'GENlep_MomId', 'GENlep_MomMomId', 'GENlep_Hindex',
              'GENZ_DaughtersId', 'GENZ_MomId', 'passedFiducialSelection_bbf',
-             'PUWeight', 'genHEPMCweight']
+             'PUWeight', 'genHEPMCweight', 'genHEPMCweight_NNLO']
     if signal == 'ggH125': b_sig.append('ggH_NNLOPS_weight') #Additional entry for the weight in case of ggH
     if not fail: b_sig.extend(['ZZMass', 'ZZPt', 'ZZy', 'Z1Mass', 'Z2Mass', 'ZZEta', 'Z1Flav', 'Z2Flav',
                           'lep_genindex', 'lep_Hindex', 'overallEventWeight', 'L1prefiringWeight','dataMCWeight', 'trigEffWeight']) #Additioanl entries for passing events
@@ -290,8 +292,8 @@ def getCoeff(channel, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, g
     for signal in signals:
         if type=='std':
             datafr = d_sig_tot[year][signal]
-            genweight = 'weight_gen'
-            recoweight = 'weight_reco'
+            genweight = 'weight_histo_gen'
+            recoweight = 'weight_histo_reco'
         elif type=='full':
             datafr = d_sig_full[signal]
             genweight = 'weight_gen'
@@ -329,6 +331,9 @@ def getCoeff(channel, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, g
         # --------------- acceptance ---------------
         acc_num = datafr[passedFiducialSelection & cutm4l_gen & cutobs_gen & cutchan_gen & cuth4l_gen][genweight].sum()
         acc_den = datafr[cutchan_gen_out][genweight].sum()
+        print 'Acceptance'
+        print len (datafr[passedFiducialSelection & cutm4l_gen & cutobs_gen & cutchan_gen & cuth4l_gen])
+        print len (datafr[cutchan_gen_out])
         acceptance[processBin] = acc_num/acc_den
         #Error
         err_acceptance[processBin] = sqrt((acceptance[processBin]*(1-acceptance[processBin]))/acc_den)
@@ -339,6 +344,10 @@ def getCoeff(channel, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, g
         eff_num = datafr[cutm4l_reco & cutobs_reco & passedFullSelection & cuth4l_reco &
                                        passedFiducialSelection & cuth4l_gen & cutm4l_gen & cutchan_gen & cutobs_gen][recoweight].sum()
         eff_den = datafr[passedFiducialSelection & cutm4l_gen & cutobs_gen & cutchan_gen & cuth4l_gen][genweight].sum()
+        print 'eff'
+        print len (datafr[cutm4l_reco & cutobs_reco & passedFullSelection & cuth4l_reco &
+                                       passedFiducialSelection & cuth4l_gen & cutm4l_gen & cutchan_gen & cutobs_gen])
+        print len (datafr[passedFiducialSelection & cutm4l_gen & cutobs_gen & cutchan_gen & cuth4l_gen])
         effrecotofid[processBin] = eff_num/eff_den
         if effrecotofid[processBin] == 0: effrecotofid[processBin] = 1e-06
         #Error
@@ -356,6 +365,14 @@ def getCoeff(channel, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, g
         oir_den_2 = datafr[cutm4l_reco & cutobs_reco & passedFullSelection &
                                          cuth4l_reco & passedFiducialSelection & cuth4l_gen & cutm4l_gen &
                                          cutchan_gen & cutobs_gen_otherfid][recoweight].sum()
+        print 'oir'
+        print len (datafr[cutm4l_reco & cutobs_reco & passedFullSelection &
+                                       cuth4l_reco & cutchan_gen_out & (notPassedFiducialSelection | cutnoth4l_gen | cutnotm4l_gen)])
+        print len (datafr[cutm4l_reco & cutobs_reco & passedFullSelection &
+                                         cuth4l_reco & passedFiducialSelection & cuth4l_gen & cutm4l_gen &
+                                         cutchan_gen & cutobs_gen][recoweight]) + len (datafr[cutm4l_reco & cutobs_reco & passedFullSelection &
+                                                                          cuth4l_reco & passedFiducialSelection & cuth4l_gen & cutm4l_gen &
+                                                                          cutchan_gen & cutobs_gen_otherfid])
         outinratio[processBin] = oir_num/(oir_den_1+oir_den_2)
         #Error
         if (outinratio[processBin]*(1-outinratio[processBin]))/(oir_den_1+oir_den_2) > 0:
@@ -379,7 +396,7 @@ def getCoeff(channel, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, recobin, g
         numberFake[processBin] = -1
 
         if opt.VERBOSE:
-            print processBin,'acc',round(acceptance[processBin],4),'eff',round(effrecotofid[processBin],4),'outinratio',round(outinratio[processBin],4)
+            print processBin,'acc',round(acceptance[processBin],4),'eff',round(effrecotofid[processBin],4),'outinratio',round(outinratio[processBin],4),'(1+f)epsilon',round((1+outinratio[processBin])*effrecotofid[processBin],4)
 
 
 def doGetCoeff(obs_reco, obs_gen, obs_name, obs_bins, type):

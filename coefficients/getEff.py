@@ -21,7 +21,7 @@ def parseOptions():
     # input options
     parser.add_option('-d', '--dir',    dest='SOURCEDIR',  type='string',default='./', help='run from the SOURCEDIR as working area, skip if SOURCEDIR is an empty string')
     parser.add_option('',   '--modelName',dest='MODELNAME',type='string',default='SM', help='Name of the Higgs production or spin-parity model, default is "SM", supported: "SM", "ggH", "VBF", "WH", "ZH", "ttH", "exotic","all"')
-    parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "ZZMass", "pT4l", "massZ2", "rapidity4l", "cosThetaStar", "nets_reco_pt30_eta4p7"')
+    parser.add_option('',   '--obsName',dest='OBSNAME',    type='string',default='',   help='Name of the observalbe, supported: "mass4l", "pT4l", "massZ2", "rapidity4l", "cosThetaStar", "nets_reco_pt30_eta4p7"')
     parser.add_option('',   '--obsBins',dest='OBSBINS',    type='string',default='',   help='Bin boundaries for the diff. measurement separated by "|", e.g. as "|0|50|100|", use the defalut if empty string')
     parser.add_option('-y', '--year',dest='YEAR', type='string',default='2017', help='year')
     parser.add_option('-f', '--doFit', action="store_true", dest='DOFIT', default=False, help='doFit, default false')
@@ -97,7 +97,9 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
     ROOT.gSystem.Load("$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so") #Print 0 in case of succesfull loading
     ROOT.gSystem.AddIncludePath("-I$ROOFITSYS/include")
 
-    recoweight = "overallEventWeight*L1prefiringWeight"
+    # recoweight = "overallEventWeight*L1prefiringWeight"
+    # recoweight = "genHEPMCweight_NNLO*PUWeight*dataMCWeight"
+    recoweight = "genWeight*pileupWeight*dataMCWeight"
 
     obs_reco_low = obs_bins[recobin]
     obs_reco_high = obs_bins[recobin+1]
@@ -108,7 +110,7 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
     obs_gen_lowest = obs_bins[0]
     obs_gen_highest = obs_bins[len(obs_bins)-1]
 
-    if (obs_reco.startswith("ZZMass")):
+    if (obs_reco.startswith("mass4l")):
         m4l_low = float(obs_reco_low)
         m4l_high = float(obs_reco_high)
         m4l_bins = int((m4l_high-m4l_low)/2)
@@ -166,32 +168,35 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
 
         cutobs_gen_otherfid = "(("+obs_gen+"<"+str(obs_gen_low)+" && "+obs_gen+">="+str(obs_gen_lowest)+") || ("+obs_gen+">="+str(obs_gen_high)+" && "+obs_gen+"<="+str(obs_gen_highest)+"))"
         cutm4l_gen     = "(GENmass4l>"+str(m4l_low)+" && GENmass4l<"+str(m4l_high)+")"
-        cutm4l_reco    = "(ZZMass>"+str(m4l_low)+" && ZZMass<"+str(m4l_high)+")"
+        cutm4l_reco    = "(mass4l>"+str(m4l_low)+" && mass4l<"+str(m4l_high)+")"
 
         if (channel == "4l"):
             cutchan_gen      = "((abs(GENlep_id[GENlep_Hindex[0]])==11 || abs(GENlep_id[GENlep_Hindex[0]])==13) && (abs(GENlep_id[GENlep_Hindex[2]])==11 || abs(GENlep_id[GENlep_Hindex[2]])==13))"
             cutchan_gen_out  = "((GENZ_DaughtersId[0]==11 || GENZ_DaughtersId[0]==13) && (GENZ_DaughtersId[1]==11 || GENZ_DaughtersId[1]==13))"
             cutm4l_gen       = "(GENmass4l>"+str(m4l_low)+" && GENmass4l<"+str(m4l_high)+")"
-            cutm4l_reco      = "(ZZMass>"+str(m4l_low)+" && ZZMass<"+str(m4l_high)+")"
+            cutm4l_reco      = "(mass4l>"+str(m4l_low)+" && mass4l<"+str(m4l_high)+")"
             cutchan_reco     = "(abs(Z1Flav) == 121 || abs(Z1Flav == 169) && (abs(Z2Flav) == 121 || abs(Z2Flav) == 169))"
         if (channel == "4e"):
             cutchan_gen      = "(abs(GENlep_id[GENlep_Hindex[0]])==11 && abs(GENlep_id[GENlep_Hindex[2]])==11)"
             cutchan_gen_out  = "(abs(GENZ_DaughtersId[0])==11 && abs(GENZ_DaughtersId[1])==11)"
             cutm4l_gen       = "(GENmass4l>"+str(m4l_low)+" && GENmass4l<"+str(m4l_high)+")"
-            cutm4l_reco      = "(ZZMass>"+str(m4l_low)+" && ZZMass<"+str(m4l_high)+" && abs(Z1Flav) == 121 && abs(Z2Flav) == 121)"
-            cutchan_reco     = "(abs(Z1Flav) == 121 && abs(Z2Flav) == 121)"
+            # cutm4l_reco      = "(mass4l>"+str(m4l_low)+" && mass4l<"+str(m4l_high)+" && abs(Z1Flav) == 121 && abs(Z2Flav) == 121)"
+            cutm4l_reco      = "(mass4e>"+str(m4l_low)+" && mass4e<"+str(m4l_high)+")"
+            # cutchan_reco     = "(abs(Z1Flav) == 121 && abs(Z2Flav) == 121)"
         if (channel == "4mu"):
             cutchan_gen      = "(abs(GENlep_id[GENlep_Hindex[0]])==13 && abs(GENlep_id[GENlep_Hindex[2]])==13)"
             cutchan_gen_out  = "(GENZ_DaughtersId[0]==13 && GENZ_DaughtersId[1]==13)"
             cutm4l_gen       = "(GENmass4l>"+str(m4l_low)+" && GENmass4l<"+str(m4l_high)+")"
-            cutm4l_reco      = "(ZZMass>"+str(m4l_low)+" && ZZMass<"+str(m4l_high)+" && abs(Z1Flav) == 169 && abs(Z2Flav) == 169)"
-            cutchan_reco     = "(abs(Z1Flav) == 169 && abs(Z2Flav) == 169)"
+            # cutm4l_reco      = "(mass4l>"+str(m4l_low)+" && mass4l<"+str(m4l_high)+" && abs(Z1Flav) == 169 && abs(Z2Flav) == 169)"
+            cutm4l_reco      = "(mass4mu>"+str(m4l_low)+" && mass4mu<"+str(m4l_high)+")"
+            # cutchan_reco     = "(abs(Z1Flav) == 169 && abs(Z2Flav) == 169)"
         if (channel == "2e2mu"):
             cutchan_gen      = "((abs(GENlep_id[GENlep_Hindex[0]])==11 && abs(GENlep_id[GENlep_Hindex[2]])==13) ||(abs(GENlep_id[GENlep_Hindex[0]])==13 && abs(GENlep_id[GENlep_Hindex[2]])==11))"
             cutchan_gen_out  = "((GENZ_DaughtersId[0]==11 && GENZ_DaughtersId[1]==13) || (GENZ_DaughtersId[0]==13 && GENZ_DaughtersId[1]==11))"
             cutm4l_gen       = "(GENmass4l>"+str(m4l_low)+" && GENmass4l<"+str(m4l_high)+")"
-            cutm4l_reco      = "(ZZMass>"+str(m4l_low)+" && ZZMass<"+str(m4l_high)+" && (abs(Z1Flav) == 169 && abs(Z2Flav) == 121) || (abs(Z1Flav) == 121 && abs(Z2Flav) == 169))"
-            cutchan_reco     = "((abs(Z1Flav) == 169 && abs(Z2Flav) == 121) || (abs(Z1Flav) == 121 && abs(Z2Flav) == 169))"
+            # cutm4l_reco      = "(mass4l>"+str(m4l_low)+" && mass4l<"+str(m4l_high)+" && (abs(Z1Flav) == 169 && abs(Z2Flav) == 121) || (abs(Z1Flav) == 121 && abs(Z2Flav) == 169))"
+            cutm4l_reco      = "(mass2e2mu>"+str(m4l_low)+" && mass2e2mu<"+str(m4l_high)+")"
+            # cutchan_reco     = "((abs(Z1Flav) == 169 && abs(Z2Flav) == 121) || (abs(Z1Flav) == 121 && abs(Z2Flav) == 169))"
 
         cuth4l_gen  = "(GENlep_MomMomId[GENlep_Hindex[0]]==25 && GENlep_MomMomId[GENlep_Hindex[1]]==25 && GENlep_MomMomId[GENlep_Hindex[2]]==25 && GENlep_MomMomId[GENlep_Hindex[3]]==25)"
         cuth4l_reco = "((lep_genindex[passedFullSelection*lep_Hindex[0]]>-0.5)*GENlep_MomMomId[max(0,lep_genindex[passedFullSelection*lep_Hindex[0]])]==25 && (lep_genindex[passedFullSelection*lep_Hindex[0]]>-0.5)*GENlep_MomId[max(0,lep_genindex[passedFullSelection*lep_Hindex[0]])]==23 && (lep_genindex[passedFullSelection*lep_Hindex[1]]>-0.5)*GENlep_MomMomId[max(0,lep_genindex[passedFullSelection*lep_Hindex[1]])]==25 && (lep_genindex[passedFullSelection*lep_Hindex[1]]>-0.5)*GENlep_MomId[max(0,lep_genindex[passedFullSelection*lep_Hindex[1]])]==23 && (lep_genindex[passedFullSelection*lep_Hindex[2]]>-0.5)*GENlep_MomMomId[max(0,lep_genindex[passedFullSelection*lep_Hindex[2]])]==25 && (lep_genindex[passedFullSelection*lep_Hindex[2]]>-0.5)*GENlep_MomId[max(0,lep_genindex[passedFullSelection*lep_Hindex[2]])]==23 && (lep_genindex[passedFullSelection*lep_Hindex[3]]>-0.5)*GENlep_MomMomId[max(0,lep_genindex[passedFullSelection*lep_Hindex[3]])]==25 && (lep_genindex[passedFullSelection*lep_Hindex[3]]>-0.5)*GENlep_MomId[max(0,lep_genindex[passedFullSelection*lep_Hindex[3]])]==23)"
@@ -209,7 +214,9 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             if (channel == "2e2mu"):
                 cutchan_gen_out  = "((GENZ_MomId[0]==25 && (GENZ_DaughtersId[0]==11 || GENZ_DaughtersId[0]==13) && GENZ_MomId[1]==25 && (GENZ_DaughtersId[1]==11 || GENZ_DaughtersId[1]==13) && GENZ_DaughtersId[0]!=GENZ_DaughtersId[1]) || (GENZ_MomId[0]==25 && (GENZ_DaughtersId[0]==11 || GENZ_DaughtersId[0]==13) && GENZ_MomId[2]==25 && (GENZ_DaughtersId[2]==11 || GENZ_DaughtersId[2]==13) && GENZ_DaughtersId[0]!=GENZ_DaughtersId[2]) || (GENZ_MomId[1]==25 && (GENZ_DaughtersId[1]==11 || GENZ_DaughtersId[1]==13) && GENZ_MomId[2]==25 && (GENZ_DaughtersId[2]==11 || GENZ_DaughtersId[2]==13) && GENZ_DaughtersId[1]!=GENZ_DaughtersId[2]))"
 
-        genweight = "genHEPMCweight*PUWeight"
+        # genweight = "genHEPMCweight*PUWeight"
+        # genweight = "genHEPMCweight_NNLO"
+        genweight = 'genWeight'
 
         # RECO level
         Histos[processBin+"reco_inc"] = TH1D(processBin+"reco_inc", processBin+"reco_inc", m4l_bins, m4l_low, m4l_high)
@@ -250,37 +257,37 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
         Histos[processBin+"recoh4lotherfid"].Sumw2()
 
         # GEN level
-        Tree[Sample].Draw("GENmass4l >> "+processBin+"fid","("+genweight+")*(passedFiducialSelection_bbf==1 && "+cutm4l_gen+" && "+cutobs_gen+" && "+cutchan_gen+"  && "+cuth4l_gen+")","goff")
+        Tree[Sample].Draw("GENmass4l >> "+processBin+"fid","("+genweight+")*(passedFiducialSelection==1 && "+cutm4l_gen+" && "+cutobs_gen+" && "+cutchan_gen+"  && "+cuth4l_gen+")","goff")
 	print "cutm4l_gen is....", cutm4l_gen
 	print "cutobs_gen is....", cutobs_gen
 	print "cutchan_gen is....", cutchan_gen
         Tree[Sample].Draw("GENmass4l >> "+processBin+"fs","("+genweight+")*("+cutchan_gen_out+")","goff")
         # RECO level
-        Tree[Sample].Draw("ZZMass >> "+processBin+"reco","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1)","goff")
-        Tree[Sample].Draw("ZZMass >> "+processBin+"reco_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1)","goff")
-        Tree[Sample].Draw("ZZMass >> "+processBin+"recoh4l","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+")","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"reco","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1)","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"reco_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1)","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+")","goff")
         if (("jet" in opt.OBSNAME) or ("Jet" in opt.OBSNAME)):
-            Tree[Sample].Draw("ZZMass >> "+processBin+"recoh4l_jesup","("+recoweight+"*passedFullSelection)*(passedFullSelection==1 && "+cutm4l_reco+" && "+cutobs_reco_jesup+" && "+cuth4l_reco+")","goff")
-            Tree[Sample].Draw("ZZMass >> "+processBin+"recoh4l_jesdn","("+recoweight+"*passedFullSelection)*( passedFullSelection==1 && "+cutm4l_reco+" && "+cutobs_reco_jesdn+" && "+cuth4l_reco+")","goff")
-        Tree[Sample].Draw("ZZMass >> "+processBin+"reconoth4l_inc","("+recoweight+")*(passedFullSelection==1 && "+cutm4l_reco+" &&  "+cutnoth4l_reco+")","goff")
-        Tree[Sample].Draw("ZZMass >> "+processBin+"recoh4l_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1 && "+cuth4l_reco+")","goff")
-        Tree[Sample].Draw("ZZMass >> "+processBin+"reconoth4l","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cutnoth4l_reco+")","goff")
-        Tree[Sample].Draw("ZZMass >> "+processBin+"reconoth4l_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1 && "+cutnoth4l_reco+")","goff")
+            Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l_jesup","("+recoweight+"*passedFullSelection)*(passedFullSelection==1 && "+cutm4l_reco+" && "+cutobs_reco_jesup+" && "+cuth4l_reco+")","goff")
+            Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l_jesdn","("+recoweight+"*passedFullSelection)*( passedFullSelection==1 && "+cutm4l_reco+" && "+cutobs_reco_jesdn+" && "+cuth4l_reco+")","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"reconoth4l_inc","("+recoweight+")*(passedFullSelection==1 && "+cutm4l_reco+" &&  "+cutnoth4l_reco+")","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"recoh4l_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1 && "+cuth4l_reco+")","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"reconoth4l","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cutnoth4l_reco+")","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"reconoth4l_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1 && "+cutnoth4l_reco+")","goff")
         # RECO and GEN level ( i.e. f(in) and f(out) )
-        Tree[Sample].Draw("ZZMass >> "+processBin+"recoh4lnotfid","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+" && "+cutchan_gen_out+" && (passedFiducialSelection_bbf==0 || !("+cuth4l_gen+") || !("+cutm4l_gen+")) )","goff")
-        Tree[Sample].Draw("ZZMass >> "+processBin+"recoh4lnotfid_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1 && "+cuth4l_reco+" && "+cutchan_gen_out+" && (passedFiducialSelection_bbf==0 || !("+cuth4l_gen+") || !("+cutm4l_gen+")) )","goff")
-        Tree[Sample].Draw("ZZMass >> "+processBin+"recoh4lfid","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+" && passedFiducialSelection_bbf==1 && "+cuth4l_gen+" && "+cutm4l_gen+" && "+cutchan_gen+" && "+cutobs_gen+")","goff")
-        Tree[Sample].Draw("ZZMass >> "+processBin+"recoh4lotherfid","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+" && passedFiducialSelection_bbf==1 && "+cuth4l_gen+" && "+cutm4l_gen+" && "+cutchan_gen+" && "+cutobs_gen_otherfid+")","goff")
-	Tree[Sample].Draw("ZZMass >> "+processBin+"numberFake", "("+recoweight+"*1000*xsec*"+str(lumi)+")/"+str(sumw[Sample])+"*(passedFullSelection == 1 && "+cutm4l_reco+" && "+cutnoth4l_reco+" && "+cutobs_reco+" && "+cutchan_reco+")","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"recoh4lnotfid","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+" && "+cutchan_gen_out+" && (passedFiducialSelection==0 || !("+cuth4l_gen+") || !("+cutm4l_gen+")) )","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"recoh4lnotfid_inc","("+recoweight+")*("+cutm4l_reco+" && passedFullSelection==1 && "+cuth4l_reco+" && "+cutchan_gen_out+" && (passedFiducialSelection==0 || !("+cuth4l_gen+") || !("+cutm4l_gen+")) )","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"recoh4lfid","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+" && passedFiducialSelection==1 && "+cuth4l_gen+" && "+cutm4l_gen+" && "+cutchan_gen+" && "+cutobs_gen+")","goff")
+        Tree[Sample].Draw("mass4l >> "+processBin+"recoh4lotherfid","("+recoweight+")*("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+" && passedFiducialSelection==1 && "+cuth4l_gen+" && "+cutm4l_gen+" && "+cutchan_gen+" && "+cutobs_gen_otherfid+")","goff")
+	# Tree[Sample].Draw("mass4l >> "+processBin+"numberFake", "("+recoweight+"*1000*xsec*"+str(lumi)+")/"+str(sumw[Sample])+"*(passedFullSelection == 1 && "+cutm4l_reco+" && "+cutnoth4l_reco+" && "+cutobs_reco+" && "+cutchan_reco+")","goff")
 
 
 
         if (Histos[processBin+"fs"].Integral()>0):
             acceptance[processBin] = round(Histos[processBin+"fid"].Integral()/Histos[processBin+"fs"].Integral(), 10)
-            print "("+cutm4l_reco+" && "+cutobs_reco+" && passedFullSelection==1 && "+cuth4l_reco+" && "+cutchan_gen_out+" && (passedFiducialSelection_bbf==0 || !("+cuth4l_gen+") || !("+cutm4l_gen+")) )"
-            print "nr acceptance   numerator=======", Histos[processBin+"fid"].GetEntries()
-            print "acceptance    numerator========", Histos[processBin+"fid"].Integral()
-            print "acceptance     denominator========", Histos[processBin+"fs"].Integral()
+            print "nr accept num", Histos[processBin+"fid"].GetEntries()
+            print "nr accept den", Histos[processBin+"fs"].GetEntries()
+            # print "acceptance    numerator========", Histos[processBin+"fid"].Integral()
+            # print "acceptance     denominator========", Histos[processBin+"fs"].Integral()
             dacceptance[processBin] = sqrt(acceptance[processBin]*(1.0-acceptance[processBin])/Histos[processBin+"fs"].Integral())
             acceptance_4l[processBin] = Histos[processBin+"fid"].Integral()/nEvents[Sample]
             print acceptance_4l[processBin], nEvents[Sample]
@@ -292,8 +299,8 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             dacceptance_4l[processBin] = -1.0
 
         if (Histos[processBin+"reco_inc"].Integral()>0):
-    	    print "AAA wrongfrac    numerator========", Histos[processBin+"reconoth4l_inc"].Integral()
-            print "wrongfrac     denominator========", Histos[processBin+"reco_inc"].Integral()
+    	    # print "wrongfrac    numerator========", Histos[processBin+"reconoth4l_inc"].Integral()
+            # print "wrongfrac     denominator========", Histos[processBin+"reco_inc"].Integral()
             wrongfrac[processBin] = Histos[processBin+"reconoth4l_inc"].Integral()/Histos[processBin+"reco_inc"].Integral()
             dwrongfrac[processBin] = sqrt(wrongfrac[processBin]*(1-wrongfrac[processBin])/Histos[processBin+"reco_inc"].Integral())
         else:
@@ -301,10 +308,8 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             dwrongfrac[processBin] = -1.0
 
         if (Histos[processBin+"reconoth4l_inc"].Integral()>0):
-    	    print "AAA binfrac    numerator========", Histos[processBin+"reconoth4l"].Integral()
-            print "nr binfrac   numerator=======", Histos[processBin+"reconoth4l"].GetEntries()
-            print "binfrac     denominator========", Histos[processBin+"reconoth4l_inc"].Integral()
-            print "nr binfrac   denominator=======", Histos[processBin+"reconoth4l_inc"].GetEntries()
+            # print "binfrac     denominator========", Histos[processBin+"reconoth4l_inc"].Integral()
+            # print "nr binfrac   denominator=======", Histos[processBin+"reconoth4l_inc"].GetEntries()
             binfrac_wrongfrac[processBin] = Histos[processBin+"reconoth4l"].Integral()/Histos[processBin+"reconoth4l_inc"].Integral()
             dbinfrac_wrongfrac[processBin] = sqrt(binfrac_wrongfrac[processBin]*(1-binfrac_wrongfrac[processBin])/Histos[processBin+"reconoth4l_inc"].Integral())
         else:
@@ -326,9 +331,11 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             dbinfrac_outfrac[processBin] = -1.0
 
         if (Histos[processBin+"fid"].Integral()>=10.0):
-    	    print "effrecotofid     numerator========", Histos[processBin+"recoh4lfid"].Integral()
-            print "effrecotofid     denominator========", Histos[processBin+"fid"].Integral()
+    	    # print "effrecotofid     numerator========", Histos[processBin+"recoh4lfid"].Integral()
+            # print "effrecotofid     denominator========", Histos[processBin+"fid"].Integral()
             effrecotofid[processBin] = Histos[processBin+"recoh4lfid"].Integral()/Histos[processBin+"fid"].Integral()
+            print "nr eff num", Histos[processBin+"recoh4lfid"].GetEntries()
+            print "nr eff den", Histos[processBin+"fid"].GetEntries()
 	    print "inside sqrt deff num", effrecotofid[processBin]*(1-effrecotofid[processBin]), "inside sqrt deff den", Histos[processBin+"fid"].Integral()
 	    if (effrecotofid[processBin]*(1-effrecotofid[processBin])/Histos[processBin+"fid"].Integral()>0):
                 deffrecotofid[processBin] = sqrt(effrecotofid[processBin]*(1-effrecotofid[processBin])/Histos[processBin+"fid"].Integral())
@@ -350,10 +357,11 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             dfolding[processBin] = -1.0
 
         if ((Histos[processBin+"recoh4lfid"].Integral()+Histos[processBin+"recoh4lotherfid"].Integral())>0.0):
-            print "onr outinratio    numerator=========", Histos[processBin+"recoh4lnotfid"].GetEntries()
-    	    print "outinratio    numerator========",  Histos[processBin+"recoh4lnotfid"].Integral()
-            print "outinratio     denominator========", Histos[processBin+"recoh4lfid"].Integral()+Histos[processBin+"recoh4lotherfid"].Integral()
+    	    # print "outinratio    numerator========",  Histos[processBin+"recoh4lnotfid"].Integral()
+            # print "outinratio     denominator========", Histos[processBin+"recoh4lfid"].Integral()+Histos[processBin+"recoh4lotherfid"].Integral()
             outinratio[processBin] = Histos[processBin+"recoh4lnotfid"].Integral()/(Histos[processBin+"recoh4lfid"].Integral()+Histos[processBin+"recoh4lotherfid"].Integral())
+            print "nr oir num", Histos[processBin+"recoh4lnotfid"].GetEntries()
+            print "nr oir den", (Histos[processBin+"recoh4lfid"].GetEntries()+Histos[processBin+"recoh4lotherfid"].GetEntries())
             if (Histos[processBin+"recoh4lnotfid"].Integral()>0):
                 doutinratio[processBin] = outinratio[processBin]*sqrt(1.0/(Histos[processBin+"recoh4lnotfid"].Integral())+1.0/(Histos[processBin+"recoh4lfid"].Integral()+Histos[processBin+"recoh4lotherfid"].Integral()))
             else: doutinratio[processBin] = 0.0
@@ -386,11 +394,11 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
 
 
         #print Sample,'nEvents total:',nEvents[Sample],channel,'pass Gen:',Histos[processBin+"fid"].Integral(),'pass Reco:',Histos[processBin+'recoh4lfid'].Integral()
-        print processBin,"acc",round(acceptance[processBin],3),"eff",round(effrecotofid[processBin],3),"fout",round(outinratio[processBin],3),"wrongfrac",round(wrongfrac[processBin],3),"numFake",round(numberFake[processBin], 3)
+        print processBin,"acc",round(acceptance[processBin],4),"eff",round(effrecotofid[processBin],4),"fout",round(outinratio[processBin],4),"wrongfrac",round(wrongfrac[processBin],4),"numFake",round(numberFake[processBin], 4),"(1+f)epsilon",round((1+outinratio[processBin])*effrecotofid[processBin],4)
 
         if (doFit):
 
-            ZZMass              = RooRealVar("ZZMass", "ZZMass", m4l_low, m4l_high)
+            mass4l              = RooRealVar("mass4l", "mass4l", m4l_low, m4l_high)
 
             passedFullSelection = RooRealVar("passedFullSelection", "passedFullSelection", 0, 2)
             eventMCWeight       = RooRealVar("eventMCWeight", "eventMCWeight", 0.0, 10.0)
@@ -408,10 +416,10 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             #a3 = RooRealVar("a3","a3",89.0,84.0,94.0)
             #a2 = RooFormulaVar("a2","a2","0.72*@0-@1",RooArgList(a1,a3))
 
-            if (channel == "4l"): poly = RooLandau("poly", "PDF", ZZMass, a1, a2)
-            if (channel == "4e"): poly = RooLandau("poly", "PDF", ZZMass, a1, a2)
-            if (channel == "4mu"): poly = RooLandau("poly", "PDF", ZZMass, a1, a2)
-            if (channel == "2e2mu"): poly = RooLandau("poly", "PDF", ZZMass, a1, a2)
+            if (channel == "4l"): poly = RooLandau("poly", "PDF", mass4l, a1, a2)
+            if (channel == "4e"): poly = RooLandau("poly", "PDF", mass4l, a1, a2)
+            if (channel == "4mu"): poly = RooLandau("poly", "PDF", mass4l, a1, a2)
+            if (channel == "2e2mu"): poly = RooLandau("poly", "PDF", mass4l, a1, a2)
 
             nbkg = RooRealVar("N_{wrong}^{fit}","N_{wrong}^{fit}", n_wrongsig, 0.5*n_wrongsig, 1.5*n_wrongsig)
             epoly = RooExtendPdf("epoly","extended bg",poly,nbkg);
@@ -450,18 +458,18 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
                 CMS_zz4l_alpha2 = RooFormulaVar("CMS_zz4l_alpha2","CMS_zz4l_alpha2","(1.94273283715)+(0*@0)",RooArgList(MH))
                 CMS_zz4l_n2 = RooFormulaVar("CMS_zz4l_n2","CMS_zz4l_n2","(2.57493609201+(0.00406135415709)*(@0-125))",RooArgList(MH))
 
-            if (channel == "4l"): signal  = RooDoubleCB("signal","signal", ZZMass, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
-            if (channel == "4e"): signal  = RooDoubleCB("signal","signal", ZZMass, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
-            if (channel == "4mu"): signal  = RooDoubleCB("signal","signal", ZZMass, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
-            if (channel == "2e2mu"): signal  = RooDoubleCB("signal","signal", ZZMass, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
+            if (channel == "4l"): signal  = RooDoubleCB("signal","signal", mass4l, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
+            if (channel == "4e"): signal  = RooDoubleCB("signal","signal", mass4l, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
+            if (channel == "4mu"): signal  = RooDoubleCB("signal","signal", mass4l, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
+            if (channel == "2e2mu"): signal  = RooDoubleCB("signal","signal", mass4l, CMS_zz4l_mean, CMS_zz4l_sigma, CMS_zz4l_alpha, CMS_zz4l_n, CMS_zz4l_alpha2, CMS_zz4l_n2)
 
             nsig    = RooRealVar("N_{right}^{fit}","N_{right}^{fit}", 1.0*n_truesig, 1.0*n_truesig)
             esignal = RooExtendPdf("esignal","esig", signal, nsig)
 
-            #if (channel == "4l"): outsignal  = RooDoubleCB("outsignal","outsignal", ZZMass, rfv_mean_CB, rfv_sigma_CB, rfv_alpha_CB, rfv_n_CB, rfv_alpha2_CB, rfv_n2_CB)
-            #if (channel == "4e"): outsignal  = RooDoubleCB("outsignal","outsignal", ZZMass, rfv_mean_CB, rfv_sigma_CB, rfv_alpha_CB, rfv_n_CB, rfv_alpha2_CB, rfv_n2_CB)
-            #if (channel == "4mu"): outsignal  = RooDoubleCB("outsignal","outsignal", ZZMass, rfv_mean_CB, rfv_sigma_CB, rfv_alpha_CB, rfv_n_CB, rfv_alpha2_CB, rfv_n2_CB)
-            #if (channel == "2e2mu"): outsignal  = RooDoubleCB("outsignal","outsignal", ZZMass, rfv_mean_CB, rfv_sigma_CB, rfv_alpha_CB, rfv_n_CB, rfv_alpha2_CB, rfv_n2_CB)
+            #if (channel == "4l"): outsignal  = RooDoubleCB("outsignal","outsignal", mass4l, rfv_mean_CB, rfv_sigma_CB, rfv_alpha_CB, rfv_n_CB, rfv_alpha2_CB, rfv_n2_CB)
+            #if (channel == "4e"): outsignal  = RooDoubleCB("outsignal","outsignal", mass4l, rfv_mean_CB, rfv_sigma_CB, rfv_alpha_CB, rfv_n_CB, rfv_alpha2_CB, rfv_n2_CB)
+            #if (channel == "4mu"): outsignal  = RooDoubleCB("outsignal","outsignal", mass4l, rfv_mean_CB, rfv_sigma_CB, rfv_alpha_CB, rfv_n_CB, rfv_alpha2_CB, rfv_n2_CB)
+            #if (channel == "2e2mu"): outsignal  = RooDoubleCB("outsignal","outsignal", mass4l, rfv_mean_CB, rfv_sigma_CB, rfv_alpha_CB, rfv_n_CB, rfv_alpha2_CB, rfv_n2_CB)
 
             outsignal  = signal.Clone("outsignal")
             noutsig    = RooRealVar("N_{out}^{fit}","N_{out}^{fit}", 1.0*n_outsig, 1.0*n_outsig)
@@ -485,13 +493,13 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             #print "TreesPassed Events slim Entries: ",Tree[Sample].GetEntriesFast()
 
             if (channel == "4l"):
-                dataset_sig  = RooDataSet("dataset_sig","dataset_sig", Tree[Sample], RooArgSet(ZZMass,observable,passedFullSelection), cutobs_reco.replace("abs(","fabs(")+" && passedFullSelection>0.5")
+                dataset_sig  = RooDataSet("dataset_sig","dataset_sig", Tree[Sample], RooArgSet(mass4l,observable,passedFullSelection), cutobs_reco.replace("abs(","fabs(")+" && passedFullSelection>0.5")
             elif (channel == "4e"):
-                dataset_sig  = RooDataSet("dataset_sig","dataset_sig", Tree[Sample], RooArgSet(ZZMass,observable,passedFullSelection), cutobs_reco.replace("abs(","fabs(")+" && passedFullSelection>0.5")
+                dataset_sig  = RooDataSet("dataset_sig","dataset_sig", Tree[Sample], RooArgSet(mass4l,observable,passedFullSelection), cutobs_reco.replace("abs(","fabs(")+" && passedFullSelection>0.5")
             elif (channel == "4mu"):
-                dataset_sig  = RooDataSet("dataset_sig","dataset_sig", Tree[Sample], RooArgSet(ZZMass,observable,passedFullSelection), cutobs_reco.replace("abs(","fabs(")+" && passedFullSelection>0.5")
+                dataset_sig  = RooDataSet("dataset_sig","dataset_sig", Tree[Sample], RooArgSet(mass4l,observable,passedFullSelection), cutobs_reco.replace("abs(","fabs(")+" && passedFullSelection>0.5")
             elif (channel == "2e2mu"):
-                dataset_sig  = RooDataSet("dataset_sig","dataset_sig", Tree[Sample], RooArgSet(ZZMass,observable,passedFullSelection), cutobs_reco.replace("abs(","fabs(")+" && passedFullSelection>0.5")
+                dataset_sig  = RooDataSet("dataset_sig","dataset_sig", Tree[Sample], RooArgSet(mass4l,observable,passedFullSelection), cutobs_reco.replace("abs(","fabs(")+" && passedFullSelection>0.5")
 
 
             #print "RooDataSet sumEntries = ",dataset_sig.sumEntries()
@@ -541,10 +549,10 @@ def geteffs(channel, List, m4l_bins, m4l_low, m4l_high, obs_reco, obs_gen, obs_b
             if (doFit):
                 # Plot updated with fitting
                 frame = RooPlot()
-                if (channel == "4l"): frame = ZZMass.frame(RooFit.Title("m4l"),RooFit.Bins(m4l_bins))
-                if (channel == "4e"): frame = ZZMass.frame(RooFit.Title("m4e"),RooFit.Bins(m4l_bins))
-                if (channel == "4mu"): frame = ZZMass.frame(RooFit.Title("m4mu"),RooFit.Bins(m4l_bins))
-                if (channel == "2e2mu"): frame = ZZMass.frame(RooFit.Title("m2e2mu"),RooFit.Bins(m4l_bins))
+                if (channel == "4l"): frame = mass4l.frame(RooFit.Title("m4l"),RooFit.Bins(m4l_bins))
+                if (channel == "4e"): frame = mass4l.frame(RooFit.Title("m4e"),RooFit.Bins(m4l_bins))
+                if (channel == "4mu"): frame = mass4l.frame(RooFit.Title("m4mu"),RooFit.Bins(m4l_bins))
+                if (channel == "2e2mu"): frame = mass4l.frame(RooFit.Title("m2e2mu"),RooFit.Bins(m4l_bins))
 
                 dataset_sig.plotOn(frame, RooFit.LineColor(kRed), RooFit.MarkerSize(0))
                 sum.plotOn(frame, RooFit.Components('poly,otherfid,outsignal'), RooFit.LineColor(kBlack))
@@ -634,7 +642,7 @@ m4l_low = 105.0
 m4l_high = 140.0
 
 # Default to inclusive cross section
-obs_reco = 'ZZMass'
+obs_reco = 'mass4l'
 obs_gen = 'GENmass4l'
 obs_reco_low = 105.0
 obs_reco_high = 140.0
@@ -700,7 +708,7 @@ for long, short in sample_shortnames.iteritems():
     #if (not "VBF" in short): continue
     List.append(long)
 
-if (obs_reco=="ZZMass"):
+if (obs_reco=="mass4l"):
     chans = ['4l'] #'4e','4mu','2e2mu','4l']
 else:
     # chans = ['4l','4e','4mu','2e2mu']
