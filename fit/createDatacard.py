@@ -10,7 +10,7 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     # Root of the name of the process (signal from genBin)
     processName = 'trueH'+channel+'Bin'
 
-    # Background expectations in [105,140]
+    # Background expectations in [105,160]
     sys.path.append('../inputs')
     _temp = __import__('inputs_bkgTemplate_'+obsName, globals(), locals(), ['expected_yield'], -1)
     expected_yield = _temp.expected_yield
@@ -110,7 +110,7 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     file.write('observation '+str(nData)+'\n')
 
     file.write('------------ \n')
-    file.write('## mass window [105.0,140.0]\n')
+    file.write('## mass window [105.0,160.0]\n')
     file.write('bin ')
     for i in range(nBins+5): # In addition to the observableBins, there are out_trueH, fakeH, bkg_ggzz, bkg_qqzz, bkg_zjets
         file.write(binName+' ')
@@ -129,8 +129,11 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     for i in range(nBins+2): # In addition to the observableBins, there are out_trueH, fakeH
         file.write('1.0 ')
     # file.write(str(bkg_qqzz[year+'_'+channel])+' '+str(bkg_ggzz[year+'_'+channel])+' '+str(bkg_zx[year+'_'+channel])+'\n') #Old implementation with hard coding bkg expectation values
-    file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
+    file.write('1 '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
     file.write('------------ \n')
+
+    # rateParam qqZZ floating
+    file.write('qqzz_'+binName+' rateParam bkg_qqzz 10\n')
 
     # norm_fake
     file.write('norm_fakeH lnU ')
@@ -140,9 +143,9 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
 
     # lumi
     file.write('lumi_13TeV_'+year+' lnN ')
-    for i in range(nBins+4): # All except ZX
+    for i in range(nBins+2): # signals + out + fake
         file.write(lumi[year]+' ')
-    file.write('-\n') # ZX
+    file.write('- '+lumi[year]+' -\n') # qqzz + ggzz + ZX 
 
     # Lepton efficiency
     file.write('CMS_eff_m lnN ')

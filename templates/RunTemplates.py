@@ -61,7 +61,7 @@ def prepareTrees(year):
     d_bkg = {}
 
     for bkg in bkgs:
-        fname = eos_path + 'MC_samples/%i' %year
+        fname = eos_path + 'MC_samples/m4l_105_160/%i' %year
         # if year == 2016:
         #     fname += '_CorrectBTag'
         if (year == 2018) & (bkg == 'ZZTo4lext'):
@@ -87,7 +87,7 @@ def xsecs(year):
 def generators(year):
     gen_bkg = {}
     for bkg in bkgs:
-        fname = eos_path + 'MC_samples/%i' %year
+        fname = eos_path + 'MC_samples/m4l_105_160/%i' %year
         # if year == 2016:
         #     fname += '_CorrectBTag'
         if (year == 2018) & (bkg == 'ZZTo4lext'):
@@ -149,8 +149,8 @@ def dataframes(year):
             bkg += '1'
         b_bkg = ['ZZMass', 'ZZPt', 'Z1Mass', 'Z2Mass', 'Z1Flav', 'Z2Flav', 'ZZEta', 'LepPt',
                  'overallEventWeight', 'L1prefiringWeight', 'JetPt', 'JetEta',
-                 'costhetastar', 'helcosthetaZ1','helcosthetaZ2','helphi','phistarZ1',
-                 'pTHj']
+                 'costhetastar', 'helcosthetaZ1','helcosthetaZ2','helphi','phistarZ1']
+                 #'pTHj']
         if (bkg == 'ZZTo4lext') | (bkg == 'ZZTo4lext1'):
             b_bkg.append('KFactor_EW_qqZZ'); b_bkg.append('KFactor_QCD_qqZZ_M')
         else:
@@ -332,8 +332,8 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
         # qqzz and ggzz
         for bkg in ['qqzz', 'ggzz']:
             for f in ['2e2mu', '4e', '4mu']:
-                #df = df_irr[year][bkg][(df_irr[year][bkg].FinState == f) & (df_irr[year][bkg].Z2Mass < 60)  & (df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 140)].copy()
-                df = df_irr[year][bkg][(df_irr[year][bkg].FinState == f) & (df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 140)].copy()
+                #df = df_irr[year][bkg][(df_irr[year][bkg].FinState == f) & (df_irr[year][bkg].Z2Mass < 60)  & (df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160)].copy()
+                df = df_irr[year][bkg][(df_irr[year][bkg].FinState == f) & (df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160)].copy()
                 len_tot = df['weight'].sum() # Total number of bkg b events in final state f
                 yield_bkg[year,bkg,f] = len_tot
                 for i in range(nBins):
@@ -351,7 +351,7 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                         sel_bin_2nd_low = df_irr[year][bkg][var_2nd] >= bin_low_2nd
                         sel_bin_2nd_high = df_irr[year][bkg][var_2nd] < bin_high_2nd
                     sel_bin_mass_low = df_irr[year][bkg].ZZMass >= 105
-                    sel_bin_mass_high = df_irr[year][bkg].ZZMass <= 140
+                    sel_bin_mass_high = df_irr[year][bkg].ZZMass <= 160
                     sel_Z2_mass = df_irr[year][bkg].Z2Mass < 60 ## Uncomment below to cut mZ2 at 60 GeV, hence removing non-reso evts
                     sel_fstate = df_irr[year][bkg]['FinState'] == f
 
@@ -372,11 +372,11 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                     # ------
 
                     if(obs_name == 'rapidity4l'):
-                        histo = ROOT.TH1D("m4l_"+var_string+"_"+str(bin_low)+"_"+str(bin_high), "m4l_"+var_string+"_"+str(bin_low)+"_"+str(bin_high), 20, 105, 140)
+                        histo = ROOT.TH1D("m4l_"+var_string+"_"+str(bin_low)+"_"+str(bin_high), "m4l_"+var_string+"_"+str(bin_low)+"_"+str(bin_high), 20, 105, 160)
                     elif doubleDiff:
-                        histo = ROOT.TH1D("m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high))+"_"+str(int(bin_low_2nd))+"_"+str(int(bin_high_2nd)), "m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high))+str(int(bin_low_2nd))+"_"+str(int(bin_high_2nd)), 20, 105, 140)
+                        histo = ROOT.TH1D("m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high))+"_"+str(int(bin_low_2nd))+"_"+str(int(bin_high_2nd)), "m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high))+str(int(bin_low_2nd))+"_"+str(int(bin_high_2nd)), 20, 105, 160)
                     else:
-                        histo = ROOT.TH1D("m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high)), "m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high)), 20, 105, 140)
+                        histo = ROOT.TH1D("m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high)), "m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high)), 20, 105, 160)
 
                     print (histo.GetName())
                     histo.FillN(len(mass4l), mass4l, w)
@@ -401,8 +401,8 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                 sel_f_state_zx = df_red[year]['FinState'] == 1
             elif(f == '2e2mu'):
                 sel_f_state_zx = (df_red[year]['FinState'] == 2) | (df_red[year]['FinState'] == 3)
-            #df = df_red[year][(sel_f_state_zx) & (df_red[year].Z2Mass < 60) & (df_red[year].ZZMass >= 105) & (df_red[year].ZZMass <=140)].copy()
-            df = df_red[year][(sel_f_state_zx) & (df_red[year].ZZMass >= 105) & (df_red[year].ZZMass <=140)].copy()
+            #df = df_red[year][(sel_f_state_zx) & (df_red[year].Z2Mass < 60) & (df_red[year].ZZMass >= 105) & (df_red[year].ZZMass <=160)].copy()
+            df = df_red[year][(sel_f_state_zx) & (df_red[year].ZZMass >= 105) & (df_red[year].ZZMass <=160)].copy()
             len_tot = df['yield_SR'].sum() # Total number of bkg events in final state f
             yield_bkg[year,'ZX',f] = len_tot
             for i in range(nBins):
@@ -420,7 +420,7 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                     sel_bin_2nd_low = df_red[year][var_2nd] >= bin_low_2nd
                     sel_bin_2nd_high = df_red[year][var_2nd] < bin_high_2nd
                 sel_bin_mass_low = df_red[year]['ZZMass'] >= 105
-                sel_bin_mass_high = df_red[year]['ZZMass'] <= 140
+                sel_bin_mass_high = df_red[year]['ZZMass'] <= 160
 
                 sel_Z2_mass = df_red[year]['Z2Mass'] < 60 ## Uncomment below to cut mZ2 at 60 GeV, hence removing non-reso evts
                 sel = sel_bin_low & sel_bin_high & sel_f_state_zx & sel_bin_mass_low & sel_bin_mass_high #& sel_Z2_mass
@@ -437,11 +437,11 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                 # ------
 
                 if((obs_name == 'rapidity4l') | ('cos' in obs_name) | ('phi' in obs_name)):
-                    histo = ROOT.TH1D("m4l_"+var_string+"_"+str(bin_low)+"_"+str(bin_high), "m4l_"+var_string+"_"+str(bin_low)+"_"+str(bin_high), 20, 105, 140)
+                    histo = ROOT.TH1D("m4l_"+var_string+"_"+str(bin_low)+"_"+str(bin_high), "m4l_"+var_string+"_"+str(bin_low)+"_"+str(bin_high), 20, 105, 160)
                 elif doubleDiff:
-                    histo = ROOT.TH1D("m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high))+"_"+str(int(bin_low_2nd))+"_"+str(int(bin_high_2nd)), "m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high))+str(int(bin_low_2nd))+"_"+str(int(bin_high_2nd)), 20, 105, 140)
+                    histo = ROOT.TH1D("m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high))+"_"+str(int(bin_low_2nd))+"_"+str(int(bin_high_2nd)), "m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high))+str(int(bin_low_2nd))+"_"+str(int(bin_high_2nd)), 20, 105, 160)
                 else:
-                    histo = ROOT.TH1D("m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high)), "m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high)), 20, 105, 140)
+                    histo = ROOT.TH1D("m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high)), "m4l_"+var_string+"_"+str(int(bin_low))+"_"+str(int(bin_high)), 20, 105, 160)
                 histo.FillN(len(mass4l), mass4l, w)
                 smoothAndNormaliseTemplate(histo, 1)
 
@@ -580,8 +580,8 @@ for year in years:
 
 # Generate pandas for ZX
 branches_ZX = ['ZZMass', 'Z1Flav', 'Z2Flav', 'LepLepId', 'LepEta', 'LepPt', 'Z1Mass', 'Z2Mass', 'ZZPt',
-               'ZZEta', 'JetPt', 'JetEta', 'costhetastar', 'helcosthetaZ1','helcosthetaZ2','helphi','phistarZ1',
-               'pTHj']
+               'ZZEta', 'JetPt', 'JetEta', 'costhetastar', 'helcosthetaZ1','helcosthetaZ2','helphi','phistarZ1']
+               #'pTHj']
 dfZX={}
 for year in years:
     g_FR_mu_EB, g_FR_mu_EE, g_FR_e_EB, g_FR_e_EE = openFR(year)

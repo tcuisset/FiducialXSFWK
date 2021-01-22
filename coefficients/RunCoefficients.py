@@ -480,7 +480,7 @@ def doGetCoeff(obs_reco, obs_gen, obs_name, obs_bins, type, obs_reco_2nd = 'None
     else:
         chans = ['4l', '4e', '4mu', '2e2mu']
     m4l_low = 105.0
-    m4l_high = 140.0
+    m4l_high = 160.0
 
     nBins = len(obs_bins)
     if not doubleDiff: nBins = len(obs_bins)-1 #In case of 1D measurement the number of bins is -1 the length of obs_bins(=bin boundaries)
@@ -552,7 +552,7 @@ def doGetCoeff(obs_reco, obs_gen, obs_name, obs_bins, type, obs_reco_2nd = 'None
 # -----------------------------------------------------------------------------------------
 signals_original = ['VBFH125', 'ggH125', 'ttH125', 'WminusH125', 'WplusH125', 'ZH125']
 signals = ['ggH125', 'VBFH125', 'WH125', 'ZH125', 'ttH125']
-eos_path_sig = '/eos/user/a/atarabin/MC_samples/'
+eos_path_sig = '/eos/user/a/atarabin/MC_samples/m4l_105_160/'
 key = 'candTree'
 key_failed = 'candTree_failed'
 

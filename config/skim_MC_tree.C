@@ -116,7 +116,7 @@ int Fiducial(float Z1Flav,float Z2Flav,float Z1Mass,float Z2Mass,float lep1Iso,f
 
   //Invariant mass of the selected four leptons
   float m4l = (lepSorted[0]+lepSorted[1]+lepSorted[2]+lepSorted[3]).M();
-  if((m4l<105) || (m4l>140)) return false;
+  if((m4l<105) || (m4l>160)) return false;
 
   //Distance between the selected four leptons
   if(lepSorted[0].DeltaR(lepSorted[1])<0.02) return false;
@@ -625,7 +625,7 @@ void skim_MC_tree (TString prod_mode = "ggH125", TString year = "2016"){
 
   TString input_dir, full_path;
   if(process=="signal") {
-    input_dir = "/eos/user/a/atarabin/MC_samples";
+    input_dir = "/eos/user/a/atarabin/MC_samples/m4l_105_160";
     full_path = Form("%s/%s/%s/ZZ4lAnalysis.root", input_dir.Data(), year.Data(), prod_mode.Data());
   }
   else {
@@ -920,7 +920,7 @@ void skim_MC_tree (TString prod_mode = "ggH125", TString year = "2016"){
   }
 
   // Copy branches in the new file
-  if(process!="signal") input_dir = "/eos/user/a/atarabin/MC_samples"; //Bkg only (At the moment bkgs original root file are not stored in our folder but in CJLST's)
+  if(process!="signal") input_dir = "/eos/user/a/atarabin/MC_samples/m4l_105_160"; //Bkg only (At the moment bkgs original root file are not stored in our folder but in CJLST's)
   TString new_name = Form("%s_reducedTree_MC_%s.root", prod_mode.Data(), year.Data());
   TString new_full_path = Form("%s/%s/%s/%s", input_dir.Data(),year.Data(),prod_mode.Data(),new_name.Data());
   TFile *newfile = new TFile(new_full_path.Data(),"RECREATE");
