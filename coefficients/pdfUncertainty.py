@@ -421,7 +421,7 @@ def getPdfUncert(channel, m4l_low, m4l_high, obs_reco, obs_gen, obs_bins, genbin
 # ------------------------------- MAIN ----------------------------------------------------
 # -----------------------------------------------------------------------------------------
 signals_original = signals = ['ggH125']
-eos_path_sig = '/eos/user/a/atarabin/MC_samples/'
+eos_path_sig = '/eos/user/a/atarabin/MC_samples/m4l_105_160/'
 key = 'candTree'
 key_failed = 'candTree_failed'
 verbose = False
@@ -533,7 +533,7 @@ else: # If I work with one year only, the FullRun2 df coincides with d_sig_tot (
 
 chans = ['4e', '4mu', '2e2mu', '4l']
 m4l_low = 105.0
-m4l_high = 140.0
+m4l_high = 160.0
 acceptance = {}
 qcdUncert = {}
 pdfUncert = {}

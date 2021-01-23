@@ -133,7 +133,7 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     file.write('------------ \n')
 
     # rateParam qqZZ floating
-    file.write('qqzz_'+binName+' rateParam bkg_qqzz 10\n')
+    file.write('qqzz_'+binName+' rateParam '+binName+' bkg_qqzz 10\n')
 
     # norm_fake
     file.write('norm_fakeH lnU ')
@@ -145,7 +145,7 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     file.write('lumi_13TeV_'+year+' lnN ')
     for i in range(nBins+2): # signals + out + fake
         file.write(lumi[year]+' ')
-    file.write('- '+lumi[year]+' -\n') # qqzz + ggzz + ZX 
+    file.write('- '+lumi[year]+' -\n') # qqzz + ggzz + ZX
 
     # Lepton efficiency
     file.write('CMS_eff_m lnN ')
