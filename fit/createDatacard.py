@@ -14,6 +14,8 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     sys.path.append('../inputs')
     _temp = __import__('inputs_bkgTemplate_'+obsName, globals(), locals(), ['expected_yield'], -1)
     expected_yield = _temp.expected_yield
+    _temp = __import__('inputs_bkg_'+obsName+'_'+year, globals(), locals(), ['fractionsBackground'], -1)
+    fractionsBackground = _temp.fractionsBackground
     sys.path.remove('../inputs')
 
     #Hard coding values for bkgs
@@ -129,11 +131,11 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     for i in range(nBins+2): # In addition to the observableBins, there are out_trueH, fakeH
         file.write('1.0 ')
     # file.write(str(bkg_qqzz[year+'_'+channel])+' '+str(bkg_ggzz[year+'_'+channel])+' '+str(bkg_zx[year+'_'+channel])+'\n') #Old implementation with hard coding bkg expectation values
-    file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
+    file.write(str(fractionsBackground['qqzz_'+channel+'_'+obsName+'_recobin'+str(obsBin)])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
     file.write('------------ \n')
 
     # rateParam qqZZ floating
-    file.write('qqzz_'+binName+'_'+year+' rateParam '+binName+' bkg_qqzz 1\n')
+    file.write('qqzz_norm rateParam '+binName+' bkg_qqzz 354.32\n')
 
     # norm_fake
     file.write('norm_fakeH lnU ')
