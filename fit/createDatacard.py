@@ -129,11 +129,11 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     for i in range(nBins+2): # In addition to the observableBins, there are out_trueH, fakeH
         file.write('1.0 ')
     # file.write(str(bkg_qqzz[year+'_'+channel])+' '+str(bkg_ggzz[year+'_'+channel])+' '+str(bkg_zx[year+'_'+channel])+'\n') #Old implementation with hard coding bkg expectation values
-    file.write('1 '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
+    file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
     file.write('------------ \n')
 
     # rateParam qqZZ floating
-    file.write('qqzz_'+binName+' rateParam '+binName+' bkg_qqzz 10\n')
+    file.write('qqzz_'+binName+'_'+year+' rateParam '+binName+' bkg_qqzz 1\n')
 
     # norm_fake
     file.write('norm_fakeH lnU ')
