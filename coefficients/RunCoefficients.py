@@ -11,6 +11,9 @@ import itertools
 import math
 import ROOT
 import json
+import os, psutil
+process = psutil.Process(os.getpid())
+print(process.memory_info()[0])
 
 print 'Welcome in RunCoefficients!'
 
@@ -630,6 +633,7 @@ else: #It is a double-differential analysis
     print 'It is a double-differential measurement, binning for the 1st variable', obs_bins_1st, 'and for the 2nd variable', obs_bins_2nd
     print obs_bins
 
+
 if doubleDiff:
     obs_name = opt.OBSNAME.split(' vs ')[0]
     obs_name_2nd = opt.OBSNAME.split(' vs ')[1]
@@ -700,6 +704,7 @@ for year in years:
     d_sig[year] = sig
     d_sig_failed[year] = sig_failed
 
+print(process.memory_info()[0])
 # Create dataframe with all the events
 d_sig_tot = {}
 for year in years:
@@ -709,7 +714,7 @@ for year in years:
         d_sup[signal] = pd.concat([d_sig[year][signal], d_sig_failed[year][signal]], ignore_index=True, sort=True)
     d_sig_tot[year] = d_sup
 
-
+print(process.memory_info()[0])
 # Create dataframe FullRun2
 if(opt.YEAR == 'Full'):
     d_sig_full = {}
@@ -720,6 +725,7 @@ else: # If I work with one year only, the FullRun2 df coincides with d_sig_tot (
     d_sig_full = d_sig_tot[int(opt.YEAR)]
 print 'Dataframes created successfully'
 
+print(process.memory_info()[0])
 print 'Coeff std'
 wrongfrac = {}
 binfrac_wrongfrac = {}
@@ -737,6 +743,7 @@ if doubleDiff:
     doGetCoeff(obs_reco, obs_gen, obs_name, obs_bins, 'std', obs_reco_2nd, obs_gen_2nd, obs_name_2nd)
 else:
     doGetCoeff(obs_reco, obs_gen, obs_name, obs_bins, 'std')
+print(process.memory_info()[0])
 
 if (opt.YEAR == 'Full'):
     print 'Coeff full'
@@ -755,6 +762,7 @@ if (opt.YEAR == 'Full'):
         doGetCoeff(obs_reco, obs_gen, obs_name, obs_bins, 'full', obs_reco_2nd, obs_gen_2nd, obs_name_2nd)
     else:
         doGetCoeff(obs_reco, obs_gen, obs_name, obs_bins, 'full')
+
 
 print 'Coeff fullNNLOPS'
 acceptance = {}
