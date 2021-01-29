@@ -131,7 +131,7 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     for i in range(nBins+2): # In addition to the observableBins, there are out_trueH, fakeH
         file.write('1.0 ')
     # file.write(str(bkg_qqzz[year+'_'+channel])+' '+str(bkg_ggzz[year+'_'+channel])+' '+str(bkg_zx[year+'_'+channel])+'\n') #Old implementation with hard coding bkg expectation values
-    file.write(str(fractionsBackground['qqzz_'+channel+'_'+obsName+'_recobin'+str(obsBin)])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
+    file.write('1 '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
     file.write('------------ \n')
 
     # rateParam qqZZ floating
@@ -180,18 +180,18 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     for i in range(nBins+3): # Signal + out + fake + qqzz
         file.write('- ')
     file.write('1.039/0.961 -\n')
-    file.write('QCDscale_VV lnN ')
-    for i in range(nBins+2): # Signal + out + fake
-        file.write('- ')
-    file.write('1.0325/0.958 - -\n')
+    # file.write('QCDscale_VV lnN ')
+    # for i in range(nBins+2): # Signal + out + fake
+    #     file.write('- ')
+    # file.write('1.0325/0.958 - -\n')
     file.write('pdf_gg lnN ')
     for i in range(nBins+3): # Signal + out + fake + qqzz
         file.write('- ')
     file.write('1.032/0.968 -\n')
-    file.write('pdf_qqbar lnN ')
-    for i in range(nBins+2): # Signal + out + fake
-        file.write('- ')
-    file.write('1.031/0.966 - -\n')
+    # file.write('pdf_qqbar lnN ')
+    # for i in range(nBins+2): # Signal + out + fake
+    #     file.write('- ')
+    # file.write('1.031/0.966 - -\n')
     file.write('kfactor_ggzz lnN ')
     for i in range(nBins+3): # Signal + out + fake  + bkg_qqzz
         file.write('- ')

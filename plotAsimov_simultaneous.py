@@ -181,6 +181,7 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
         n_fakeH_asimov[fState] = 0.0
         n_out_trueH_asimov[fState] = 0.0
         n_zz_asimov[fState] = 0.0
+        n_qqzz_asimov[fState] = 0.0
         n_zjets_asimov[fState] = 0.0
         for year in ["1", "2", "3"]:
             n_trueH_asimov[fState] += n_trueH_asimov[fState+"_"+year]
@@ -188,6 +189,7 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
             n_fakeH_asimov[fState] += n_fakeH_asimov[fState+"_"+year]
             n_out_trueH_asimov[fState] += n_out_trueH_asimov[fState+"_"+year]
             n_zz_asimov[fState] += n_zz_asimov[fState+"_"+year]
+            n_qqzz_asimov[fState] += n_qqzz_asimov[fState+"_"+year]
             n_zjets_asimov[fState] += n_zjets_asimov[fState+"_"+year]
 
     n_trueH_asimov["4l"] = 0.0
@@ -196,12 +198,14 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     n_out_trueH_asimov["4l"] = 0.0
     n_zjets_asimov["4l"] = 0.0
     n_zz_asimov["4l"] = 0.0
+    n_qqzz_asimov["4l"] = 0.0
     for year in ["1", "2", "3"]:
         n_trueH_asimov["4l"] += n_trueH_asimov["4l_"+year]
         n_trueH_otherfid_asimov["4l"] += n_trueH_otherfid_asimov["4l_"+year]
         n_fakeH_asimov["4l"] += n_fakeH_asimov["4l_"+year]
         n_out_trueH_asimov["4l"] += n_out_trueH_asimov["4l_"+year]
         n_zjets_asimov["4l"] += n_zjets_asimov["4l_"+year]
+        n_qqzz_asimov["4l"] += n_zz_asimov["4l_"+year]
         n_zz_asimov["4l"] += n_zz_asimov["4l_"+year]
 
     f_modelfit = TFile(sourcedir + fname, "READ")
@@ -296,6 +300,8 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
         n_fakeH_modelfit[fState] = 0.0
         n_out_trueH_modelfit[fState] = 0.0
         n_zz_modelfit[fState] = 0.0
+        n_qqzz_modelfit[fState] = 0.0
+        n_ggzz_modelfit[fState] = 0.0
         n_zjets_modelfit[fState] = 0.0
         for year in ["1", "2", "3"]:
             n_trueH_modelfit[fState] += n_trueH_modelfit[fState+"_"+year]
@@ -303,6 +309,8 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
             n_fakeH_modelfit[fState] += n_fakeH_modelfit[fState+"_"+year]
             n_out_trueH_modelfit[fState] += n_out_trueH_modelfit[fState+"_"+year]
             n_zz_modelfit[fState] += n_zz_modelfit[fState+"_"+year]
+            n_qqzz_modelfit[fState] += n_qqzz_modelfit[fState+"_"+year]
+            n_ggzz_modelfit[fState] += n_ggzz_modelfit[fState+"_"+year]
             n_zjets_modelfit[fState] += n_zjets_modelfit[fState+"_"+year]
 
     n_trueH_modelfit["4l"] = 0.0
@@ -311,6 +319,8 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     n_out_trueH_modelfit["4l"] = 0.0
     n_zjets_modelfit["4l"] = 0.0
     n_zz_modelfit["4l"] = 0.0
+    n_qqzz_modelfit["4l"] = 0.0
+    n_ggzz_modelfit["4l"] = 0.0
     for year in ["1", "2", "3"]:
         n_trueH_modelfit["4l"] += n_trueH_modelfit["4l_"+year]
         n_trueH_otherfid_modelfit["4l"] += n_trueH_otherfid_modelfit["4l_"+year]
@@ -318,6 +328,8 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
         n_out_trueH_modelfit["4l"] += n_out_trueH_modelfit["4l_"+year]
         n_zjets_modelfit["4l"] += n_zjets_modelfit["4l_"+year]
         n_zz_modelfit["4l"] += n_zz_modelfit["4l_"+year]
+        n_qqzz_modelfit["4l"] += n_qqzz_modelfit["4l_"+year]
+        n_ggzz_modelfit["4l"] += n_ggzz_modelfit["4l_"+year]
 
 
 
@@ -425,7 +437,7 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     c.cd()
 
     #dummy = TH1D("","",1,105.6,140.6)
-    dummy = TH1D("","",1,105.0,140.0)
+    dummy = TH1D("","",1,105.0,160.0)
     dummy.SetBinContent(1,2)
     dummy.SetFillColor(0)
     dummy.SetLineColor(0)
@@ -481,6 +493,9 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     legend.AddEntry(dummy_fake, "N_{wrong}^{fit} = %.2f (exp. = %.2f)"%(n_fakeH_modelfit[fstate],n_fakeH_asimov[fstate]), "l")
     legend.AddEntry(dummy_zz, "N_{ZZ}^{fit} = %.2f (exp. = %.2f)"%(n_zz_modelfit[fstate],n_zz_asimov[fstate]), "l")
     legend.AddEntry(dummy_zx, "N_{Z+X}^{fit} = %.2f (exp. = %.2f)"%(n_zjets_modelfit[fstate],n_zjets_asimov[fstate]), "l")
+    print('qqZZ', fstate, n_qqzz_modelfit[fstate])
+    print('ggZZ', fstate, n_ggzz_modelfit[fstate])
+
     #legend.SetTextSize(0.03)
     #if (not opt.UNBLIND):
     #    legend.AddEntry(dummy_data,"Asimov Data (SM m(H) = "+opt.ASIMOVMASS+" GeV)","ep")

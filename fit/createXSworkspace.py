@@ -404,9 +404,9 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
     out_trueH_norm_func = out_trueH_norm_func.replace(str(nBins)+"+",str(nBins)+")")
     out_trueH_norm = ROOT.RooFormulaVar("out_trueH_norm",out_trueH_norm_func,out_trueH_norm_args)
 
-    #frac_qqzz = fractionsBackground['qqzz_'+channel+'_'+obsName+'_'+recobin]
+    frac_qqzz = fractionsBackground['qqzz_'+channel+'_'+obsName+'_'+recobin]
     #frac_qqzz_var  = ROOT.RooRealVar("frac_qqzz_"+recobin+"_"+channel+"_"+year,"frac_qqzz_"+recobin+"_"+channel+"_"+year, frac_qqzz);
-    frac_qqzz = 1
+    # frac_qqzz = 1
     frac_qqzz_var  = ROOT.RooRealVar("frac_qqzz_"+recobin+"_"+channel+"_"+year,"frac_qqzz_"+recobin+"_"+channel+"_"+year, frac_qqzz);
 
     frac_ggzz = fractionsBackground['ggzz_'+channel+'_'+obsName+'_'+recobin]
