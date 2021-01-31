@@ -1,4 +1,4 @@
-import sys, os, string, re, pwd, commands, ast, optparse, shlex, time
+import sys, os, string, re, pwd,  ast, optparse, shlex, time
 from array import array
 from math import *
 from decimal import *
@@ -90,7 +90,7 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
     if(not opt.UNBLIND):
     	theorymass = theorymass + '.123456'
     fname = 'higgsCombine_'+obsName+'_SigmaBin0.MultiDimFit.mH'+theorymass+'.root'
-    print fname
+    print(fname)
 
     f_asimov = TFile(sourcedir + fname, "READ")
 
@@ -140,9 +140,9 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
                 # In case of mass4l we have only one bin, so the third 'chan' part is not included in the name of the function
                 if (obsName!='mass4l'): trueH_asimov[fState+"_"+year+"Bin"+str(bin)] = w_asimov.function("n_exp_final_binch"+year+"_ch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_trueH"+fState+"Bin"+str(bin))
                 else: trueH_asimov[fState+"_"+year+"Bin"+str(bin)] = w_asimov.function("n_exp_final_binch"+year+"_ch"+channel[fState]+"_proc_trueH"+fState+"Bin"+str(bin))
-                print fState+"_"+year+"Bin"+str(bin)
-                print "n_exp_final_binch"+year+"_ch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_trueH"+fState+"Bin"+str(bin)
-                print trueH_asimov[fState+"_"+year+"Bin"+str(bin)].getVal()
+                print (fState+"_"+year+"Bin"+str(bin))
+                print ("n_exp_final_binch"+year+"_ch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_trueH"+fState+"Bin"+str(bin))
+                print (trueH_asimov[fState+"_"+year+"Bin"+str(bin)].getVal())
 
             if (obsName!='mass4l'):
                 zjets_asimov[fState+"_"+year] = w_asimov.function("n_exp_final_binch"+year+"_ch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_bkg_zjets")
@@ -259,9 +259,9 @@ def plotAsimov_sim(asimovDataModel, asimovPhysicalModel, modelName, physicalMode
                 else:
                     trueH_modelfit[fState+"_"+year+"Bin"+str(bin)] = w_modelfit.function("n_exp_final_binch"+year+"_ch"+channel[fState]+"_proc_trueH"+fState+"Bin"+str(bin))
                     trueH_modelfit[fState+"_"+year+"Bin"+str(bin)] = w_modelfit.function("n_exp_final_binch"+year+"_ch"+channel[fState]+"_proc_trueH"+fState+"Bin"+str(bin))
-                print fState+"_"+year+"Bin"+str(bin)
-                print "n_exp_final_binch"+year+"_ch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_trueH"+fState+"Bin"+str(bin)
-                print trueH_modelfit[fState+"_"+year+"Bin"+str(bin)].getVal()
+                print (fState+"_"+year+"Bin"+str(bin))
+                print ("n_exp_final_binch"+year+"_ch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_trueH"+fState+"Bin"+str(bin))
+                print (trueH_modelfit[fState+"_"+year+"Bin"+str(bin)].getVal())
 
             if(obsName!='mass4l'):
                 zjets_modelfit[fState+"_"+year] = w_modelfit.function("n_exp_final_binch"+year+"_ch"+channel[fState]+"_ch"+str(recobin+1)+"_proc_bkg_zjets")

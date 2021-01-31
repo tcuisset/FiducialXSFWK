@@ -334,8 +334,8 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
             for f in ['2e2mu', '4e', '4mu']:
                 #df = df_irr[year][bkg][(df_irr[year][bkg].FinState == f) & (df_irr[year][bkg].Z2Mass < 60)  & (df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160)].copy()
                 df_2016 = df_irr[2016][bkg][(df_irr[2016][bkg].ZZMass >= 105) & (df_irr[2016][bkg].ZZMass <= 160)].copy()
-                df_2017 = df_irr[2016][bkg][(df_irr[2016][bkg].ZZMass >= 105) & (df_irr[2016][bkg].ZZMass <= 160)].copy()
-                df_2018 = df_irr[2016][bkg][(df_irr[2016][bkg].ZZMass >= 105) & (df_irr[2016][bkg].ZZMass <= 160)].copy()
+                df_2017 = df_irr[2017][bkg][(df_irr[2017][bkg].ZZMass >= 105) & (df_irr[2017][bkg].ZZMass <= 160)].copy()
+                df_2018 = df_irr[2018][bkg][(df_irr[2018][bkg].ZZMass >= 105) & (df_irr[2018][bkg].ZZMass <= 160)].copy()
                 df = pd.concat([df_2016,df_2017,df_2018])
                 len_tot = df['weight'].sum() # Total number of bkg b events in all final states and across years
                 #yield_bkg[year,bkg,f] = len_tot #This information for qqZZ floating becomes useless
