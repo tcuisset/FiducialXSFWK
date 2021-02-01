@@ -339,7 +339,9 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                 df_2016_ggzz = df_irr[2016]['ggzz'][(df_irr[2016]['ggzz'].ZZMass >= 105) & (df_irr[2016]['ggzz'].ZZMass <= 160)].copy()
                 df_2017_ggzz = df_irr[2017]['ggzz'][(df_irr[2017]['ggzz'].ZZMass >= 105) & (df_irr[2017]['ggzz'].ZZMass <= 160)].copy()
                 df_2018_ggzz = df_irr[2018]['ggzz'][(df_irr[2018]['ggzz'].ZZMass >= 105) & (df_irr[2018]['ggzz'].ZZMass <= 160)].copy()
-                df = pd.concat([df_2016_qqzz,df_2017_qqzz,df_2018_qqzz,df_2016_ggzz,df_2017_ggzz,df_2018_ggzz])
+                df = pd.concat([df_2016_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),df_2017_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),
+                                df_2018_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),df_2016_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal']),
+                                df_2017_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal']),df_2018_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal'])])
                 len_tot = df['weight'].sum() # Total number of bkg b events in all final states and across years
                 #yield_bkg[year,bkg,f] = len_tot #This information for qqZZ floating becomes useless
                 for i in range(nBins):
