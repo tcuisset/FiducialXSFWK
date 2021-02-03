@@ -333,17 +333,6 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
         for bkg in ['qqzz','ggzz']:
             for f in ['2e2mu', '4e', '4mu']:
                 #df = df_irr[year][bkg][(df_irr[year][bkg].FinState == f) & (df_irr[year][bkg].Z2Mass < 60)  & (df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160)].copy()
-                df_2016_qqzz = df_irr[2016]['qqzz'][(df_irr[2016]['qqzz'].ZZMass >= 105) & (df_irr[2016]['qqzz'].ZZMass <= 160)].copy()
-                df_2017_qqzz = df_irr[2017]['qqzz'][(df_irr[2017]['qqzz'].ZZMass >= 105) & (df_irr[2017]['qqzz'].ZZMass <= 160)].copy()
-                df_2018_qqzz = df_irr[2018]['qqzz'][(df_irr[2018]['qqzz'].ZZMass >= 105) & (df_irr[2018]['qqzz'].ZZMass <= 160)].copy()
-                df_2016_ggzz = df_irr[2016]['ggzz'][(df_irr[2016]['ggzz'].ZZMass >= 105) & (df_irr[2016]['ggzz'].ZZMass <= 160)].copy()
-                df_2017_ggzz = df_irr[2017]['ggzz'][(df_irr[2017]['ggzz'].ZZMass >= 105) & (df_irr[2017]['ggzz'].ZZMass <= 160)].copy()
-                df_2018_ggzz = df_irr[2018]['ggzz'][(df_irr[2018]['ggzz'].ZZMass >= 105) & (df_irr[2018]['ggzz'].ZZMass <= 160)].copy()
-                df = pd.concat([df_2016_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),df_2017_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),
-                                df_2018_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),df_2016_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal']),
-                                df_2017_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal']),df_2018_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal'])])
-                len_tot = df['weight'].sum() # Total number of bkg b events in all final states and across years
-                #yield_bkg[year,bkg,f] = len_tot #This information for qqZZ floating becomes useless
                 for i in range(nBins):
                     if not doubleDiff:
                         bin_low = binning[i]
@@ -365,6 +354,18 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
 
                     sel = sel_bin_low & sel_bin_high & sel_bin_mass_low & sel_bin_mass_high & sel_fstate
                     if doubleDiff: sel &= sel_bin_2nd_low & sel_bin_2nd_high
+
+                    df_2016_qqzz = df_irr[2016]['qqzz'][(df_irr[2016]['qqzz'].ZZMass >= 105) & (df_irr[2016]['qqzz'].ZZMass <= 160) & (df_irr[2016]['qqzz'][var] >= bin_low) & (df_irr[2016]['qqzz'][var] < bin_high)].copy()
+                    df_2017_qqzz = df_irr[2017]['qqzz'][(df_irr[2017]['qqzz'].ZZMass >= 105) & (df_irr[2017]['qqzz'].ZZMass <= 160) & (df_irr[2017]['qqzz'][var] >= bin_low) & (df_irr[2017]['qqzz'][var] < bin_high)].copy()
+                    df_2018_qqzz = df_irr[2018]['qqzz'][(df_irr[2018]['qqzz'].ZZMass >= 105) & (df_irr[2018]['qqzz'].ZZMass <= 160) & (df_irr[2018]['qqzz'][var] >= bin_low) & (df_irr[2018]['qqzz'][var] < bin_high)].copy()
+                    df_2016_ggzz = df_irr[2016]['ggzz'][(df_irr[2016]['ggzz'].ZZMass >= 105) & (df_irr[2016]['ggzz'].ZZMass <= 160) & (df_irr[2016]['ggzz'][var] >= bin_low) & (df_irr[2016]['ggzz'][var] < bin_high)].copy()
+                    df_2017_ggzz = df_irr[2017]['ggzz'][(df_irr[2017]['ggzz'].ZZMass >= 105) & (df_irr[2017]['ggzz'].ZZMass <= 160) & (df_irr[2017]['ggzz'][var] >= bin_low) & (df_irr[2017]['ggzz'][var] < bin_high)].copy()
+                    df_2018_ggzz = df_irr[2018]['ggzz'][(df_irr[2018]['ggzz'].ZZMass >= 105) & (df_irr[2018]['ggzz'].ZZMass <= 160) & (df_irr[2018]['ggzz'][var] >= bin_low) & (df_irr[2018]['ggzz'][var] < bin_high)].copy()
+                    df = pd.concat([df_2016_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),df_2017_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),
+                                    df_2018_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),df_2016_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal']),
+                                    df_2017_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal']),df_2018_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal'])])
+                    len_tot = df['weight'].sum() # Total number of bkg b events in all final states and across years
+                    yield_bkg['ZZ_'+str(i)] = len_tot
 
                     df = df_irr[year][bkg][sel].copy()
                     len_bin = df['weight'].sum() # Number of bkg events in bin i
@@ -412,7 +413,7 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
             #df = df_red[year][(sel_f_state_zx) & (df_red[year].Z2Mass < 60) & (df_red[year].ZZMass >= 105) & (df_red[year].ZZMass <=160)].copy()
             df = df_red[year][(sel_f_state_zx) & (df_red[year].ZZMass >= 105) & (df_red[year].ZZMass <=160)].copy()
             len_tot = df['yield_SR'].sum() # Total number of bkg events in final state f
-            yield_bkg[year,'ZX',f] = len_tot
+            yield_bkg[str(year)+'_ZX_'+f] = len_tot
             for i in range(nBins):
                 if not doubleDiff:
                     bin_low = binning[i]
