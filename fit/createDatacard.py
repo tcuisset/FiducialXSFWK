@@ -135,7 +135,7 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     file.write('------------ \n')
 
     # rateParam qqZZ floating
-    file.write('zz_norm_'+str(obsBin)+' rateParam '+binName+' bkg_*zz 1\n')
+    file.write('zz_norm_'+str(obsBin)+' rateParam '+binName+' bkg_*zz '+expected_yield['ZZ_'+str(obsBin)]+'\n')
 
     # norm_fake
     file.write('norm_fakeH lnU ')
