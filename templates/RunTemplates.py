@@ -354,10 +354,13 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                     sel = sel_bin_low & sel_bin_high & sel_bin_mass_low & sel_bin_mass_high & sel_fstate
                     if doubleDiff: sel &= sel_bin_2nd_low & sel_bin_2nd_high
 
-                    df_2016 = df_irr[2016][bkg][(df_irr[2016][bkg].ZZMass >= 105) & (df_irr[2016][bkg].ZZMass <= 160) & (df_irr[2016]['qqzz'][var] >= bin_low) & (df_irr[2016]['qqzz'][var] < bin_high)].copy()
-                    df_2017 = df_irr[2017][bkg][(df_irr[2017][bkg].ZZMass >= 105) & (df_irr[2017][bkg].ZZMass <= 160) & (df_irr[2017]['qqzz'][var] >= bin_low) & (df_irr[2017]['qqzz'][var] < bin_high)].copy()
-                    df_2018 = df_irr[2018][bkg][(df_irr[2018][bkg].ZZMass >= 105) & (df_irr[2018][bkg].ZZMass <= 160) & (df_irr[2018]['qqzz'][var] >= bin_low) & (df_irr[2018]['qqzz'][var] < bin_high)].copy()
-                    df = pd.concat([df_2016,df_2017,df_2018])
+                    if len(years)>1:
+                        df_2016 = df_irr[2016][bkg][(df_irr[2016][bkg].ZZMass >= 105) & (df_irr[2016][bkg].ZZMass <= 160) & (df_irr[2016]['qqzz'][var] >= bin_low) & (df_irr[2016]['qqzz'][var] < bin_high)].copy()
+                        df_2017 = df_irr[2017][bkg][(df_irr[2017][bkg].ZZMass >= 105) & (df_irr[2017][bkg].ZZMass <= 160) & (df_irr[2017]['qqzz'][var] >= bin_low) & (df_irr[2017]['qqzz'][var] < bin_high)].copy()
+                        df_2018 = df_irr[2018][bkg][(df_irr[2018][bkg].ZZMass >= 105) & (df_irr[2018][bkg].ZZMass <= 160) & (df_irr[2018]['qqzz'][var] >= bin_low) & (df_irr[2018]['qqzz'][var] < bin_high)].copy()
+                        df = pd.concat([df_2016,df_2017,df_2018])
+                    else:
+                        df = df_irr[year][bkg][(df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160) & (df_irr[year]['qqzz'][var] >= bin_low) & (df_irr[year]['qqzz'][var] < bin_high)].copy()
                     len_tot = df['weight'].sum() # Total number of bkg b events in all final states and across years
                     yield_bkg['qqZZ_'+str(i)] = len_tot
 
