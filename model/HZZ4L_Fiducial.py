@@ -1,4 +1,5 @@
 from HiggsAnalysis.CombinedLimit.PhysicsModel import *
+# from HiggsAnalysis.CombinedLimit.SMHiggsBuilder import SMHiggsBuilder
 
 class InclusiveFiducial( PhysicsModel ):
     ''' Model used to unfold differential distributions '''
@@ -131,28 +132,31 @@ class DifferentialFiducial( PhysicsModel ):
         POIs=""
         if self.debug>0:print "Setting pois"
         for iBin in range(0,self.nBin):
+            fracSM4e = self.modelBuilder.out.var("fracSM4eBin%d" % (iBin)).getVal()
+            fracSM4mu = self.modelBuilder.out.var("fracSM4muBin%d" % (iBin)).getVal()
+
             if self.modelBuilder.out.var("rBin%d" % (iBin)):
                 self.modelBuilder.out.var("rBin%d" % (iBin)).setRange(self.Range[0], self.Range[1])
                 self.modelBuilder.out.var("rBin%d" % (iBin)).setConstant(False)
             else :
-                self.modelBuilder.doVar("rBin%d[1, %s,%s]" % (iBi, self.Range[0],self.Range[1]))
-
-            if self.modelBuilder.out.var("frac4eBin%d" % (iBin)):
-                self.modelBuilder.out.var("frac4eBin%d" % (iBin)).setRange(self.fracRange[0], self.fracRange[1])
-                self.modelBuilder.out.var("frac4eBin%d" % (iBin)).setConstant(False)
+                self.modelBuilder.doVar("rBin%d[1, %s,%s]" % (iBin, self.Range[0],self.Range[1]))
+            ''''
+            if self.modelBuilder.out.var("fracSM4eBin%d" % (iBin)):
+                self.modelBuilder.out.var("fracSM4eBin%d" % (iBin)).setRange(self.fracRange[0], self.fracRange[1])
+                self.modelBuilder.out.var("fracSM4eBin%d" % (iBin)).setConstant(False)
             else :
-                self.modelBuilder.doVar("frac4eBin%d[0.25, %s,%s]" % (iBin, self.fracRange[0],self.fracRange[1]))
+                self.modelBuilder.doVar("fracSM4eBin%d[0.25, %s,%s]" % (iBin, self.fracRange[0],self.fracRange[1]))
 
-            if self.modelBuilder.out.var("frac4muBin%d" % (iBin)):
-                self.modelBuilder.out.var("frac4muBin%d" % (iBin)).setRange(self.fracRange[0], self.fracRange[1])
-                self.modelBuilder.out.var("frac4muBin%d" % (iBin)).setConstant(False)
+            if self.modelBuilder.out.var("fracSM4muBin%d" % (iBin)):
+                self.modelBuilder.out.var("fracSM4muBin%d" % (iBin)).setRange(self.fracRange[0], self.fracRange[1])
+                self.modelBuilder.out.var("fracSM4muBin%d" % (iBin)).setConstant(False)
             else :
-                self.modelBuilder.doVar("frac4muBin%d[0.25, %s,%s]" % (iBin, self.fracRange[0],self.fracRange[1]))
-
+                self.modelBuilder.doVar("fracSM4muBin%d[0.25, %s,%s]" % (iBin, self.fracRange[0],self.fracRange[1]))
+            '''
             if iBin>=0:
                 POIs+="rBin%d,"%iBin
-                POIs+="frac4eBin%d,"%iBin
-                POIs+="frac4muBin%d,"%iBin
+                #POIs+="fracSM4eBin%d,"%iBin
+                #POIs+="fracSM4muBin%d,"%iBin
                 if self.debug>0:print "Added Bin%d to the POIs"%iBin
         poiNames=[]
         if self.modelBuilder.out.var("MH"):
@@ -181,20 +185,31 @@ class DifferentialFiducial( PhysicsModel ):
 
     def setup(self):        
         for iBin in range(0,self.nBin):
-            self.modelBuilder.factory_('expr::r_trueH2e2muBin%d("@0*(1-@1-@2)", rBin%d, frac4eBin%d, frac4muBin%d)' % (iBin,iBin,iBin,iBin))
-            self.modelBuilder.factory_('expr::r_trueH4eBin%d("@0*@1", rBin%d, frac4eBin%d)'% (iBin,iBin,iBin))
-            self.modelBuilder.factory_('expr::r_trueH4muBin%d("@0*@1", rBin%d, frac4muBin%d)'% (iBin,iBin,iBin))
+            #these define the signal strenghts per production mode and should be implemented in createXSworkspace
+            self.modelBuilder.factory_('expr::r_trueH2e2muBin%d("@0*(1-@1-@2)", rBin%d, fracSM4eBin%d, fracSM4muBin%d)' % (iBin,iBin,iBin,iBin))
+            self.modelBuilder.factory_('expr::r_trueH4eBin%d("@0*@1", rBin%d, fracSM4eBin%d)'% (iBin,iBin,iBin))
+            self.modelBuilder.factory_('expr::r_trueH4muBin%d("@0*@1", rBin%d, fracSM4muBin%d)'% (iBin,iBin,iBin))
 
+    # def getYieldScale(self,bin,process):
+    #     if not self.DC.isSignal[process]: return 1
+    #     name = "fiducial_%s" % process
+             
+    #     self.modelBuilder.factory_('expr::%s("@0", r_%s)' % (name, process))
+    #     if process in [ "trueH2e2muBin0","trueH4eBin0","trueH4muBin0","trueH2e2muBin1","trueH4eBin1","trueH4muBin1","trueH2e2muBin2","trueH4eBin2","trueH4muBin2","trueH2e2muBin3","trueH4eBin3","trueH4muBin3"]: 
+    #         return name
+    #     else :
+    #         return 1
+    
     def getYieldScale(self,bin,process):
         if not self.DC.isSignal[process]: return 1
-        name = "fiducial_%s" % process
-             
-        self.modelBuilder.factory_('expr::%s("@0", r_%s)' % (name, process))
-        if process in [ "trueH2e2muBin0","trueH4eBin0","trueH4muBin0","trueH2e2muBin1","trueH4eBin1","trueH4muBin1","trueH2e2muBin2","trueH4eBin2","trueH4muBin2","trueH2e2muBin3","trueH4eBin3","trueH4muBin3"]: 
-            return name
-        else :
-            return 1
-
+        Processes = []
+        ## Inclusive signal strength has to be 1.0
+        ## i.e. sum of per fs mu has to be 1.0
+        for iBin in range(0,self.nBin):
+            for channel in ['4e', '4mu', '2e2mu']:
+                Processes += ['trueH'+channel+'Bin'+str(iBin)]
+        if process in Processes: return 'r_'+process
+        else: return 1
 
 class InclusiveFiducialV2( PhysicsModel ):
     ''' Model used to unfold differential distributions '''
@@ -496,6 +511,8 @@ class InclusiveFiducialV3( PhysicsModel ):
             self.modelBuilder.doVar("K2[1,%s,%s]" % (0.0, (1.0-fracSM4e)/fracSM4mu))
 
         POIs+="Sigma,"
+        ## Possible remove these, keep BR constant in the fit.
+        ## Would make sense as they are always at boundary.
         POIs+="K1,"
         POIs+="K2"
 
@@ -654,6 +671,128 @@ class DifferentialFiducialV3( PhysicsModel ):
             for iBin in range(0,self.nBin):
                 for channel in ['4e', '4mu', '2e2mu']:       
                     Processes += ['true'+Boson+channel+'Bin'+str(iBin)]
+        if process in Processes: return 'Sigma_'+process
+        else: return 1
+
+class DifferentialFiducialK( PhysicsModel ):
+    ''' Model used to unfold differential distributions for Fiducial cross-section model for both H->4l and Z->4l'''
+
+    def __init__(self):
+        PhysicsModel.__init__(self)
+        self.muBinRange=[0.,5.]
+        self.nBin=4
+        self.MHRange=[20.0,200.0]
+        self.defautMH=125.0
+        self.fState="inclusive"
+        self.debug=1
+
+    def setPhysicsOptions(self,physOptions):
+        if self.debug>0:print "Setting PhysicsModel Options"
+        for po in physOptions:
+            if po.startswith("range="):
+                self.muBinRange=po.replace("range=","").split(",")
+                if len(self.muBinRange)!=2:
+                    raise RunTimeError, "muBinRange require minimal and maximal values: range=min,max"
+                if self.debug>0:print "New muBinRange is ", self.muBinRange
+            if po.startswith("higgsMassRange="):
+                if self.debug>0: print "setting MHRange floating:",po.replace("higgsMassRange=","").split(",")
+                self.MHRange=po.replace("higgsMassRange=","").split(",")
+                #checks
+                if len(self.MHRange) != 2:
+                    raise RuntimeError, "MHRange definition requires two extrema: higgsMassRange=min,max"
+                elif float(self.MHRange[0]) >= float(self.MHRange[1]):
+                    raise RuntimeError, "Extrema for MH defined with inverterd order. Second must be larger the first"
+            if po.startswith("mass="):
+                self.defaultMH=float( po.replace('mass=','') )
+            if po.startswith("nBin="):
+                self.nBin=int(po.replace("nBin=",""))
+                if self.debug>0:print "new n. of bins is ",self.nBin
+            if po.startswith("fState="):
+                self.fState=po.replace("fState=","")
+                print(self.fState)
+                if self.debug>0:print "Final state is ",self.fState
+            #verbose
+            if po.startswith("verbose"):
+                self.debug = 1
+
+
+    def doParametersOfInterest(self):
+        POIs=""
+        if self.debug>0:print "Setting pois"
+
+        for iBin in range(0,self.nBin):
+            # get values from the workspace
+            if(self.fState!='4mu'):
+                fracSM4e = self.modelBuilder.out.var("fracSM4eBin%d" % (iBin)).getVal()
+            if(self.fState!='4e'):
+                fracSM4mu = self.modelBuilder.out.var("fracSM4muBin%d" % (iBin)).getVal()
+            SigmaBin = self.modelBuilder.out.var("SigmaBin%d" % (iBin)).getVal()
+
+            if self.modelBuilder.out.var("muBin%d" % (iBin)):
+                self.modelBuilder.out.var("muBin%d" % (iBin)).setRange(self.muBinRange[0], self.muBinRange[1])
+                self.modelBuilder.out.var("muBin%d" % (iBin)).setConstant(False)
+            else :
+                self.modelBuilder.doVar("muBin%d[1, %s,%s]" % (iBi, self.muBinRange[0],self.muBinRange[1]))
+
+            if iBin>=0:
+                POIs+="muBin%d,"%iBin
+                print(self.fState)
+                if self.debug>0:print "Added Bin%d to the POIs"%iBin
+
+        poiNames=[]
+        if self.modelBuilder.out.var("MH"):
+            if len(self.MHRange) == 2:
+                print 'MH will be left floating within', self.MHRange[0], 'and', self.MHRange[1]
+                self.modelBuilder.out.var("MH").setRange(float(self.MHRange[0]),float(self.MHRange[1]))
+                self.modelBuilder.out.var("MH").setConstant(False)
+                poiNames += [ 'MH' ]
+            else:
+                print 'MH will be assumed to be', self.defaultMH
+                self.modelBuilder.out.var("MH").removeRange()
+                self.modelBuilder.out.var("MH").setVal(self.defaultMH)
+        else:
+            if len(self.MHRange) == 2:
+                print 'MH will be left floating within', self.MHRange[0], 'and', self.MHRange[1]
+                self.modelBuilder.doVar("MH[%s,%s]" % (self.MHRange[0],self.MHRange[1]))
+                poiNames += [ 'MH' ]
+            else:
+                print 'MH (not there before) will be assumed to be', self.defaultMH
+                self.modelBuilder.doVar("MH[%g]" % self.defaultMH)
+        for poi in poiNames:
+            POIs += "%s,"%poi
+        POIs = POIs[:-1] # remove last comma
+        self.modelBuilder.doSet("POI",POIs)
+        self.setup()
+
+    def setup(self):        
+        for iBin in range(0,self.nBin):
+            if (self.fState=='4e'):
+                self.modelBuilder.factory_('expr::Sigma_trueH4eBin%d("@0*@1*@2", muBin%d, SigmaBin%d, fracSM4eBin%d)' % (iBin,iBin,iBin,iBin))
+            elif (self.fState=='4mu'):
+                self.modelBuilder.factory_('expr::Sigma_trueH4muBin%d("@0*@1*@2", muBin%d, SigmaBin%d, fracSM4muBin%d)' % (iBin,iBin,iBin,iBin))
+            elif (self.fState=='2e2mu'):
+                self.modelBuilder.factory_('expr::Sigma_trueH2e2muBin%d("@0*@1*(1.0-@2-@3)", muBin%d, SigmaBin%d, fracSM4eBin%d, fracSM4muBin%d)' % (iBin,iBin,iBin,iBin,iBin) )
+            else:
+                self.modelBuilder.factory_('expr::Sigma_trueH4eBin%d("@0*@1*@2", muBin%d, SigmaBin%d, fracSM4eBin%d)' % (iBin,iBin,iBin,iBin))
+                self.modelBuilder.factory_('expr::Sigma_trueH4muBin%d("@0*@1*@2", muBin%d, SigmaBin%d, fracSM4muBin%d)' % (iBin,iBin,iBin,iBin))
+                self.modelBuilder.factory_('expr::Sigma_trueH2e2muBin%d("@0*@1*(1.0-@2-@3)", muBin%d, SigmaBin%d, fracSM4eBin%d, fracSM4muBin%d)' % (iBin,iBin,iBin,iBin,iBin) )
+
+    def getYieldScale(self,bin,process):
+        if not self.DC.isSignal[process]: return 1
+        if (self.fState=='4e'):
+            fStates = ['4e']
+        elif (self.fState=='4mu'):
+            fStates = ['4mu']
+        elif (self.fState=='2e2mu'):
+            fStates = ['2e2mu']
+        else:
+            fStates = ['4e', '4mu', '2e2mu']
+
+        Processes = []
+        Boson = 'H'
+        for iBin in range(0,self.nBin):
+            for channel in fStates:       
+                Processes += ['true'+Boson+channel+'Bin'+str(iBin)]
         if process in Processes: return 'Sigma_'+process
         else: return 1
 
@@ -998,9 +1137,107 @@ class H4lZ4lInclusiveFiducialRatioV2( PhysicsModel ):
         else:
             return 1
 
+class TrilinearHiggs(PhysicsModel):
+    "Float independently cross sections and branching ratios"
+    # def __init__(self):
+    #     PhysicsModel.__init__(self)
+    #     # SMLikeHiggsModel.__init__(self) # not using 'super(x,self).__init__' since I don't understand it
+    #     self.mHRange = []
+    #     self.poiNames = []
 
+    def __init__(self):
+        PhysicsModel.__init__(self)
+        self.nBin=4
+        self.MHRange=[20.0,200.0]
+        self.defautMH=125.38
 
+    def setPhysicsOptions(self,physOptions):
+        for po in physOptions:
+            if po.startswith("higgsMassRange="):
+                self.mHRange = po.replace("higgsMassRange=","").split(",")
+                if len(self.mHRange) != 2:
+                    raise RuntimeError, "Higgs mass range definition requires two extrema"
+                elif float(self.mHRange[0]) >= float(self.mHRange[1]):
+                    raise RuntimeError, "Extrema for Higgs mass range defined with inverterd order. Second must be larger the first"
 
+    def doParametersOfInterest(self):
+        """Create POI and other parameters, and define the POI set."""
+        POIs=""
+        # trilinear Higgs couplings modified 
+        self.modelBuilder.doVar("k_lambda[1,-20.,20.]")
+        # self.poiNames="k_lambda"
+        POIs = "k_lambda"
+        self.modelBuilder.doSet("POI",POIs)
+        print POIs
+        self.setup()
+
+    def setup(self):
+        # Let's start with ggH
+        #Use inclusive value for ggH: EWK reweighting tool not available. Taken directly from arXiv:1607.04251
+        proc = "ggH"
+        C1_ggH = 0.0066
+        C1_map = {}
+        for i in range(5): # equivalent to nBins above
+            C1_map["ggH_gen%g"%i] = C1_ggH
+ 
+        #Define dZH constant variable
+        dZH = -1.536e-3
+
+        #Loop over processes*gen bins in map to define how cross-section scales
+        # for proc in C1_map:
+        #   self.modelBuilder.factory_("expr::XSscal_%s(\"(1+@0*%g+%g)/((1-(@0*@0-1)*%g)*(1+%g+%g))\",k_lambda)"%(proc,C1_map[proc],dZH,dZH,C1_map[proc],dZH))
+        # For the moment ggH scaling only
+        self.modelBuilder.factory_("expr::XSscal_%s(\"(1+@0*%g+%g)/((1-(@0*@0-1)*%g)*(1+%g+%g))\",k_lambda)"%(proc,C1_ggH,dZH,dZH,C1_ggH,dZH))
+
+        #Scaling @ decay: define expression for how BR scales as function of klambda: h->gammagamma
+        #Use following parameters taken directly from: arXiv:1607.04251
+        # C1_hgg = 0.0049
+        C1_hzz = 0.0083 # hzz4l
+        C1_tot = 2.5e-3
+        self.modelBuilder.factory_("expr::BRscal_hzz(\"1+(((@0-1)*(%g-%g))/(1+(@0-1)*%g))\",k_lambda)"%(C1_hzz,C1_tot,C1_tot))
+        self.modelBuilder.factory_('expr::XSBRscal_ggH_hzz(\"(@0*@1)\", XSscal_ggH, BRscal_hzz)')
+        
+        # print self.poiNames
+        # self.modelBuilder.doSet("POI",self.poiNames)
+
+    def getYieldScale(self,bin,process):
+        if not self.DC.isSignal[process]: return 1
+        name = "XSBRscal_ggH_hzz" #% (production,decay)
+        # self.modelBuilder.factory_('expr::%s(\"(@0*@1)\", XSscal_ggH, BRscal_hzz)'%(name))
+        return name
+
+        # Processes = []
+        # Boson = 'H'
+        # for iBin in range(5): #,self.nBin):
+        #     for channel in fStates:       
+        #         Processes += ['ggH_gen'+str(iBin)+'_hzz']
+        # if process in Processes: 
+
+        #     return 'Sigma_'+process
+        # else: return 1
+
+    # def getHiggsSignalYieldScale(self,production,decay):
+        
+    #     #XSBR
+    #     name = "XSBRscal_%s_%s" % (production,decay)
+    #     #Name has not been defined in doParametersOfInterest: combine XS + BR
+    #     if self.modelBuilder.out.function(name) == None:
+    #       #XS
+    #       if self.modelBuilder.out.function( "XSscal_%s"%(production) ) == None:
+    #         print "DEBUG: proc not given XS scaling"
+    #         raise RuntimeError, "Production mode %s not supported"%production
+    #       else:
+    #         XSscal = "XSscal_%s_%s"%(production,decay)
+    #       #BR
+    #       if self.modelBuilder.out.function( "BRscal_%s"%(decay) ) == None:
+    #         print "DEBUG: proc not given BR scaling"
+    #         raise RuntimeError, "Decay mode %s not supported"%decay
+    #       else:
+    #         BRscal = "BRscal_%s"%decay
+    #       #XSBR
+    #       self.modelBuilder.factory_('expr::%s(\"(@0*@1)\", XSscal_%s, BRscal_%s)'%(name,production,decay))
+    #       print '[LHC-CMS Trilinear]', name, ": ", self.modelBuilder.out.function(name).Print("")
+    #     return name
                      
 inclusiveFiducial=InclusiveFiducial()
 inclusiveFiducialV2=InclusiveFiducialV2()
@@ -1009,7 +1246,10 @@ inclusiveFiducialV3=InclusiveFiducialV3()
 differentialFiducial=DifferentialFiducial()
 differentialFiducialV2=DifferentialFiducialV2()
 differentialFiducialV3=DifferentialFiducialV3()
+differentialFiducialK=DifferentialFiducialK()
 
 h4lZ4lInclusiveFiducialRatio=H4lZ4lInclusiveFiducialRatio()
 h4lZ4lInclusiveFiducialRatioV2=H4lZ4lInclusiveFiducialRatioV2()
 
+
+trilinearHiggs = TrilinearHiggs()
