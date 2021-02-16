@@ -140,19 +140,19 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
 
     # lumi
     file.write('lumi_13TeV_'+year+' lnN ')
-    for i in range(nBins+4): # All except ZX
+    for i in range(nBins+2): # Signal + out_trueH + fakeH
         file.write(lumi[year]+' ')
-    file.write('-\n') # ZX
+    file.write('- '+lumi[year]+' -\n') # qqZZ + ggZZ + ZX
 
     # Lepton efficiency
     file.write('CMS_eff_m lnN ')
-    for i in range(nBins+4): # All except ZX
+    for i in range(nBins+2): # Signal + out_trueH + fakeH
         file.write(eff_mu[year+'_'+channel]+' ')
-    file.write('-\n') # ZX
+    file.write('- '+eff_mu[year+'_'+channel]+' -\n') # qqZZ + ggZZ + ZX
     file.write('CMS_eff_e lnN ')
-    for i in range(nBins+4): # All except ZX
+    for i in range(nBins+2): # Signal + out_trueH + fakeH
         file.write(eff_e[year+'_'+channel]+' ')
-    file.write('-\n') # ZX
+    file.write('- '+eff_e[year+'_'+channel]+' -\n') # qqZZ + ggZZ + ZX
 
     # ZX
     file.write('CMS_hzz'+channel+'_Zjets_'+year+' lnN ')
@@ -175,18 +175,22 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     for i in range(nBins+3): # Signal + out + fake + qqzz
         file.write('- ')
     file.write('1.039/0.961 -\n')
-    file.write('QCDscale_VV lnN ')
-    for i in range(nBins+2): # Signal + out + fake
-        file.write('- ')
-    file.write('1.0325/0.958 - -\n')
+    # file.write('QCDscale_VV lnN ')
+    # for i in range(nBins+2): # Signal + out + fake
+    #     file.write('- ')
+    # file.write('1.0325/0.958 - -\n')
     file.write('pdf_gg lnN ')
     for i in range(nBins+3): # Signal + out + fake + qqzz
         file.write('- ')
     file.write('1.032/0.968 -\n')
-    file.write('pdf_qqbar lnN ')
+    # file.write('pdf_qqbar lnN ')
+    # for i in range(nBins+2): # Signal + out + fake
+    #     file.write('- ')
+    # file.write('1.031/0.966 - -\n')
+    file.write('floating lnN ')
     for i in range(nBins+2): # Signal + out + fake
         file.write('- ')
-    file.write('1.031/0.966 - -\n')
+    file.write('1.99 - -\n')
     file.write('kfactor_ggzz lnN ')
     for i in range(nBins+3): # Signal + out + fake  + bkg_qqzz
         file.write('- ')
