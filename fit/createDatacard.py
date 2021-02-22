@@ -147,17 +147,17 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     file.write('lumi_13TeV_'+year+' lnN ')
     for i in range(nBins+2): # signals + out + fake
         file.write(lumi[year]+' ')
-    file.write('- '+lumi[year]+' -\n') # qqzz + ggzz + ZX
+    file.write(lumi[year]+' - -\n') # qqzz + ggzz + ZX
 
     # Lepton efficiency
     file.write('CMS_eff_m lnN ')
     for i in range(nBins+2): # signals + out + fake
         file.write(eff_mu[year+'_'+channel]+' ')
-    file.write('- '+eff_mu[year+'_'+channel]+' -\n') # qqzz ggzz ZX
+    file.write(eff_mu[year+'_'+channel]+' - -\n') # qqzz ggzz ZX
     file.write('CMS_eff_e lnN ')
     for i in range(nBins+2): # signals + out + fake
         file.write(eff_e[year+'_'+channel]+' ')
-    file.write('- '+eff_e[year+'_'+channel]+' -\n') # qqzz ggzz ZX
+    file.write(eff_e[year+'_'+channel]+' - -\n') # qqzz ggzz ZX
 
     # ZX
     file.write('CMS_hzz'+channel+'_Zjets_'+year+' lnN ')
@@ -176,26 +176,26 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     file.write('CMS_zz4l_n_sig_'+str(channelNumber)+'_'+year+' param 0.0 0.05\n')
 
     # Theoretical
-    file.write('QCDscale_ggVV lnN ')
-    for i in range(nBins+3): # Signal + out + fake + qqzz
-        file.write('- ')
-    file.write('1.039/0.961 -\n')
-    # file.write('QCDscale_VV lnN ')
-    # for i in range(nBins+2): # Signal + out + fake
+    # file.write('QCDscale_ggVV lnN ')
+    # for i in range(nBins+3): # Signal + out + fake + qqzz
     #     file.write('- ')
-    # file.write('1.0325/0.958 - -\n')
-    file.write('pdf_gg lnN ')
-    for i in range(nBins+3): # Signal + out + fake + qqzz
+    # file.write('1.039/0.961 -\n')
+    file.write('QCDscale_VV lnN ')
+    for i in range(nBins+2): # Signal + out + fake
         file.write('- ')
-    file.write('1.032/0.968 -\n')
-    # file.write('pdf_qqbar lnN ')
-    # for i in range(nBins+2): # Signal + out + fake
+    file.write('1.0325/0.958 - -\n')
+    # file.write('pdf_gg lnN ')
+    # for i in range(nBins+3): # Signal + out + fake + qqzz
     #     file.write('- ')
-    # file.write('1.031/0.966 - -\n')
-    file.write('kfactor_ggzz lnN ')
-    for i in range(nBins+3): # Signal + out + fake  + bkg_qqzz
+    # file.write('1.032/0.968 -\n')
+    file.write('pdf_qqbar lnN ')
+    for i in range(nBins+2): # Signal + out + fake
         file.write('- ')
-    file.write('1.1 -\n')
+    file.write('1.031/0.966 - -\n')
+    # file.write('kfactor_ggzz lnN ')
+    # for i in range(nBins+3): # Signal + out + fake  + bkg_qqzz
+    #     file.write('- ')
+    # file.write('1.1 -\n')
 
     # ZX
     file.write('CMS_zjets_bkgdcompo_'+str(year)+' lnN ')

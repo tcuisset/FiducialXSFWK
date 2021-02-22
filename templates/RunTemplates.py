@@ -61,7 +61,7 @@ def prepareTrees(year):
     d_bkg = {}
 
     for bkg in bkgs:
-        fname = eos_path + 'MC_samples/m4l_105_160/%i' %year
+        fname = eos_path + 'MC_samples/%i' %year
         # if year == 2016:
         #     fname += '_CorrectBTag'
         if (year == 2018) & (bkg == 'ZZTo4lext'):
@@ -87,7 +87,7 @@ def xsecs(year):
 def generators(year):
     gen_bkg = {}
     for bkg in bkgs:
-        fname = eos_path + 'MC_samples/m4l_105_160/%i' %year
+        fname = eos_path + 'MC_samples/%i' %year
         # if year == 2016:
         #     fname += '_CorrectBTag'
         if (year == 2018) & (bkg == 'ZZTo4lext'):
@@ -329,8 +329,8 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
         fractionBkg = {}
         nBins = len(obs_bins)
         if not doubleDiff: nBins = len(obs_bins)-1 #In case of 1D measurement the number of bins is -1 the length of obs_bins(=bin boundaries)
-        # qqZZ floating
-        for bkg in ['qqzz']:
+        # ggZZ floating
+        for bkg in ['ggzz']:
             for f in ['2e2mu', '4e', '4mu']:
                 for i in range(nBins):
                     if not doubleDiff:
@@ -355,12 +355,12 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                     if doubleDiff: sel &= sel_bin_2nd_low & sel_bin_2nd_high
 
                     if len(years)>1:
-                        df_2016 = df_irr[2016][bkg][(df_irr[2016][bkg].ZZMass >= 105) & (df_irr[2016][bkg].ZZMass <= 160) & (df_irr[2016]['qqzz'][var] >= bin_low) & (df_irr[2016]['qqzz'][var] < bin_high)].copy()
-                        df_2017 = df_irr[2017][bkg][(df_irr[2017][bkg].ZZMass >= 105) & (df_irr[2017][bkg].ZZMass <= 160) & (df_irr[2017]['qqzz'][var] >= bin_low) & (df_irr[2017]['qqzz'][var] < bin_high)].copy()
-                        df_2018 = df_irr[2018][bkg][(df_irr[2018][bkg].ZZMass >= 105) & (df_irr[2018][bkg].ZZMass <= 160) & (df_irr[2018]['qqzz'][var] >= bin_low) & (df_irr[2018]['qqzz'][var] < bin_high)].copy()
+                        df_2016 = df_irr[2016][bkg][(df_irr[2016][bkg].ZZMass >= 105) & (df_irr[2016][bkg].ZZMass <= 160) & (df_irr[2016][bkg][var] >= bin_low) & (df_irr[2016][bkg][var] < bin_high)].copy()
+                        df_2017 = df_irr[2017][bkg][(df_irr[2017][bkg].ZZMass >= 105) & (df_irr[2017][bkg].ZZMass <= 160) & (df_irr[2017][bkg][var] >= bin_low) & (df_irr[2017][bkg][var] < bin_high)].copy()
+                        df_2018 = df_irr[2018][bkg][(df_irr[2018][bkg].ZZMass >= 105) & (df_irr[2018][bkg].ZZMass <= 160) & (df_irr[2018][bkg][var] >= bin_low) & (df_irr[2018][bkg][var] < bin_high)].copy()
                         df = pd.concat([df_2016,df_2017,df_2018])
                     else:
-                        df = df_irr[year][bkg][(df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160) & (df_irr[year]['qqzz'][var] >= bin_low) & (df_irr[year]['qqzz'][var] < bin_high)].copy()
+                        df = df_irr[year][bkg][(df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160) & (df_irr[year][bkg][var] >= bin_low) & (df_irr[year][bkg][var] < bin_high)].copy()
                     len_tot = df['weight'].sum() # Total number of bkg b events in all final states and across years
                     yield_bkg['qqZZ_'+str(i)] = len_tot
 
@@ -399,8 +399,8 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                     histo.Write()
                     outFile.Close()
                     histo.Delete()
-        # ggzz
-        for bkg in ['ggzz']:
+        # qqzz
+        for bkg in ['qqzz']:
             for f in ['2e2mu', '4e', '4mu']:
                 #df = df_irr[year][bkg][(df_irr[year][bkg].FinState == f) & (df_irr[year][bkg].Z2Mass < 60)  & (df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160)].copy()
                 df = df_irr[year][bkg][(df_irr[year][bkg].FinState == f) & (df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160)].copy()
