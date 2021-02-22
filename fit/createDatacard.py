@@ -135,7 +135,7 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     file.write('------------ \n')
 
     # rateParam qqZZ floating
-    file.write('zz_norm_'+str(obsBin)+' rateParam '+binName+' bkg_*zz '+expected_yield['ZZ_'+str(obsBin)]+'\n')
+    file.write('zz_norm_'+str(obsBin)+' rateParam '+binName+' bkg_*zz '+str(expected_yield['ZZ_'+str(obsBin)])+' ['+str(expected_yield['ZZ_'+str(obsBin)]-100)+','+str(expected_yield['ZZ_'+str(obsBin)]+100)+']\n')
 
     # norm_fake
     file.write('norm_fakeH lnU ')
@@ -151,13 +151,13 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
 
     # Lepton efficiency
     file.write('CMS_eff_m lnN ')
-    for i in range(nBins+4): # All except ZX
+    for i in range(nBins+2): # All except ZX
         file.write(eff_mu[year+'_'+channel]+' ')
-    file.write('-\n') # ZX
+    file.write('- - -\n') # qqzz + ggzz + ZX
     file.write('CMS_eff_e lnN ')
-    for i in range(nBins+4): # All except ZX
+    for i in range(nBins+2): # All except ZX
         file.write(eff_e[year+'_'+channel]+' ')
-    file.write('-\n') # ZX
+    file.write('- - -\n') # qqzz + ggzz + ZX
 
     # ZX
     file.write('CMS_hzz'+channel+'_Zjets_'+year+' lnN ')

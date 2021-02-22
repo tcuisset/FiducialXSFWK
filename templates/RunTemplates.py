@@ -61,7 +61,7 @@ def prepareTrees(year):
     d_bkg = {}
 
     for bkg in bkgs:
-        fname = eos_path + 'MC_samples/m4l_105_160/%i' %year
+        fname = eos_path + 'MC_samples/%i' %year
         # if year == 2016:
         #     fname += '_CorrectBTag'
         if (year == 2018) & (bkg == 'ZZTo4lext'):
@@ -87,7 +87,7 @@ def xsecs(year):
 def generators(year):
     gen_bkg = {}
     for bkg in bkgs:
-        fname = eos_path + 'MC_samples/m4l_105_160/%i' %year
+        fname = eos_path + 'MC_samples/%i' %year
         # if year == 2016:
         #     fname += '_CorrectBTag'
         if (year == 2018) & (bkg == 'ZZTo4lext'):

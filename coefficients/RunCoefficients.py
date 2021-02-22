@@ -189,8 +189,8 @@ def createDataframe(d_sig,fail,gen,xsec,signal,lumi):
              'GENZ_DaughtersId', 'GENZ_MomId', 'passedFiducialSelection_bbf',
              'PUWeight', 'genHEPMCweight','GENnjets_pt30_eta2p5',
              'GenCleanedJetPt', 'GenCleanedJetEta', 'GENpTj1', 'GENmassZ2', 'GENmassZ1',
-             'GENcosThetaStar', 'GENcosTheta1','GENcosTheta2','GENPhi','GENPhi1',
-             'GENpTHj']
+             'GENcosThetaStar', 'GENcosTheta1','GENcosTheta2','GENPhi','GENPhi1']
+             #'GENpTHj']
     if signal == 'ggH125': b_sig.append('ggH_NNLOPS_weight') #Additional entry for the weight in case of ggH
     if not fail: b_sig.extend(['ZZMass', 'ZZPt', 'ZZy', 'Z1Mass', 'Z2Mass', 'ZZEta', 'Z1Flav', 'Z2Flav',
                           'lep_genindex', 'lep_Hindex', 'overallEventWeight', 'L1prefiringWeight','dataMCWeight', 'trigEffWeight', 'njets_pt30_eta2p5',
@@ -555,7 +555,7 @@ def doGetCoeff(obs_reco, obs_gen, obs_name, obs_bins, type, obs_reco_2nd = 'None
 # -----------------------------------------------------------------------------------------
 signals_original = ['VBFH125', 'ggH125', 'ttH125', 'WminusH125', 'WplusH125', 'ZH125']
 signals = ['ggH125', 'VBFH125', 'WH125', 'ZH125', 'ttH125']
-eos_path_sig = '/eos/user/a/atarabin/MC_samples/m4l_105_160/'
+eos_path_sig = '/eos/user/a/atarabin/MC_samples/'
 key = 'candTree'
 key_failed = 'candTree_failed'
 

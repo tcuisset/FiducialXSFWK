@@ -144,7 +144,7 @@ def impactPlots():
     for obsBin in range(nBins-1):
         cmd += ':SigmaBin' + str(obsBin) + '=0,'+max_sigma
     if (not opt.UNBLIND):
-        cmd = cmd + ' -t -1 --setParameters MH=125.38,' + cmd_BR[:-1] + ',' + cmd_XSEC
+        cmd = cmd + ' -t -1 --cminDefaultMinimizerStrategy 0 --setParameters MH=125.38,' + cmd_BR[:-1] + ',' + cmd_XSEC
     print cmd, '\n'
     output = processCmd(cmd)
 
@@ -157,7 +157,7 @@ def impactPlots():
     for obsBin in range(nBins-1):
         cmd += ':SigmaBin' + str(obsBin) + '=0,'+max_sigma
     if (not opt.UNBLIND):
-        cmd = cmd + ' -t -1 --setParameters MH=125.38,' + cmd_BR[:-1] + ',' + cmd_XSEC
+        cmd = cmd + ' -t -1 --cminDefaultMinimizerStrategy 0 --setParameters MH=125.38,' + cmd_BR[:-1] + ',' + cmd_XSEC
     print cmd, '\n'
     output = processCmd(cmd)
 
@@ -173,7 +173,7 @@ def impactPlots():
             #     XH[obsBin]+=XH_fs
             # _obsxsec = XH[obsBin]
             # Third step
-            cmd = 'combineTool.py -M Impacts -d ../combine_files/SM_125_all_13TeV_xs_'+obsName+'_bin_v3.root -m 125.38 --redefineSignalPOIs SigmaBin' + str(obsBin) + ' --setParameterRanges MH=125.38,125.38:SigmaBin' + str(obsBin) + '=0,'+max_sigma
+            cmd = 'combineTool.py -M Impacts -d ../combine_files/SM_125_all_13TeV_xs_'+obsName+'_bin_v3.root -m 125.38 --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs SigmaBin' + str(obsBin) + ' --setParameterRanges MH=125.38,125.38:SigmaBin' + str(obsBin) + '=0,'+max_sigma
             if (not opt.UNBLIND):
                 cmd = cmd + ' -t -1 --setParameters MH=125.38,' + ['K1'+s for s in cmd_BR.split('K1')[1:]][obsBin] + cmd_XSEC.split(',')[obsBin]
             cmd += ' -o impacts_v3_'+obsName+'_SigmaBin'+str(obsBin)+'_'
