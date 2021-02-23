@@ -329,7 +329,7 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
         fractionBkg = {}
         nBins = len(obs_bins)
         if not doubleDiff: nBins = len(obs_bins)-1 #In case of 1D measurement the number of bins is -1 the length of obs_bins(=bin boundaries)
-        # qqZZ and ggZZ floating
+        # qqZZ and ggZZ floating with separate rateParam
         for bkg in ['qqzz','ggzz']:
             for f in ['2e2mu', '4e', '4mu']:
                 #df = df_irr[year][bkg][(df_irr[year][bkg].FinState == f) & (df_irr[year][bkg].Z2Mass < 60)  & (df_irr[year][bkg].ZZMass >= 105) & (df_irr[year][bkg].ZZMass <= 160)].copy()
@@ -361,11 +361,12 @@ def doTemplates(df_irr, df_red, binning, var, var_string, var_2nd='None'):
                     df_2016_ggzz = df_irr[2016]['ggzz'][(df_irr[2016]['ggzz'].ZZMass >= 105) & (df_irr[2016]['ggzz'].ZZMass <= 160) & (df_irr[2016]['ggzz'][var] >= bin_low) & (df_irr[2016]['ggzz'][var] < bin_high)].copy()
                     df_2017_ggzz = df_irr[2017]['ggzz'][(df_irr[2017]['ggzz'].ZZMass >= 105) & (df_irr[2017]['ggzz'].ZZMass <= 160) & (df_irr[2017]['ggzz'][var] >= bin_low) & (df_irr[2017]['ggzz'][var] < bin_high)].copy()
                     df_2018_ggzz = df_irr[2018]['ggzz'][(df_irr[2018]['ggzz'].ZZMass >= 105) & (df_irr[2018]['ggzz'].ZZMass <= 160) & (df_irr[2018]['ggzz'][var] >= bin_low) & (df_irr[2018]['ggzz'][var] < bin_high)].copy()
-                    df = pd.concat([df_2016_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),df_2017_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),
-                                    df_2018_qqzz.drop(columns=['KFactor_EW_qqZZ','KFactor_QCD_qqZZ_M']),df_2016_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal']),
-                                    df_2017_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal']),df_2018_ggzz.drop(columns=['KFactor_QCD_ggZZ_Nominal'])])
+                    if bkg == 'qqzz':
+                        df = pd.concat([df_2016_qqzz,df_2017_qqzz,df_2018_qqzz])
+                    elif bkg == 'ggzz':
+                        df = pd.concat([df_2016_ggzz,df_2017_ggzz,df_2018_ggzz])
                     len_tot = df['weight'].sum() # Total number of bkg b events in all final states and across years
-                    yield_bkg['ZZ_'+str(i)] = len_tot
+                    yield_bkg[bkg+'_'+str(i)] = len_tot
 
                     df = df_irr[year][bkg][sel].copy()
                     len_bin = df['weight'].sum() # Number of bkg events in bin i
