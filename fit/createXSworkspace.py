@@ -168,19 +168,16 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
         # Wrong signal combination events
         if (channel=='4mu'):
-            p1_12018 = ROOT.RooRealVar("CMS_fakeH_p1_12018","p1_12018",165.0, 145.0, 185.0)
-            p3_12018 = ROOT.RooRealVar("CMS_fakeH_p3_12018","p3_12018",89.0, 84.0,94.0)
-            p2_12018 = ROOT.RooFormulaVar("CMS_fakeH_p2_12018","p2_12018","0.72*@0-@1",ROOT.RooArgList(p1_12018,p3_12018))
+            p1_12018 = ROOT.RooFormulaVar("CMS_fakeH_p1_12018", "p1_12018","139.99-0.70*(@0-125)",ROOT.RooArgList(MH))
+            p2_12018 = ROOT.RooFormulaVar("CMS_fakeH_p2_12018","p2_12018","7.2008-0.38641*(@0-125)",ROOT.RooArgList(MH))
             fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_12018, p2_12018)
         if (channel=='4e'):
-            p1_22018 = ROOT.RooRealVar("CMS_fakeH_p1_22018","p1_22018",165.0, 145.0, 185.0)
-            p3_22018 = ROOT.RooRealVar("CMS_fakeH_p3_22018","p3_22018",89.0, 84.0,94.0)
-            p2_22018 = ROOT.RooFormulaVar("CMS_fakeH_p2_22018","p2_22018","0.72*@0-@1",ROOT.RooArgList(p1_22018,p3_22018))
+            p1_22018 = ROOT.RooFormulaVar("CMS_fakeH_p1_22018","p1_22018","136.4428-1.20775*(@0-125)",ROOT.RooArgList(MH))
+            p2_22018 = ROOT.RooFormulaVar("CMS_fakeH_p2_22018","p2_22018","6.9318-0.67813*(@0-125)",ROOT.RooArgList(MH))
             fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_22018, p2_22018)
         if (channel=='2e2mu'):
-            p1_32018 = ROOT.RooRealVar("CMS_fakeH_p1_32018","p1_32018",165.0, 145.0, 185.0)
-            p3_32018 = ROOT.RooRealVar("CMS_fakeH_p3_32018","p3_32018",89.0, 84.0,94.0)
-            p2_32018 = ROOT.RooFormulaVar("CMS_fakeH_p2_32018","p2_32018","0.72*@0-@1",ROOT.RooArgList(p1_32018,p3_32018))
+            p1_32018 = ROOT.RooFormulaVar("CMS_fakeH_p1_32018","p1_32018","134.8540-0.41421*(@0-125)",ROOT.RooArgList(MH))
+            p2_32018 = ROOT.RooFormulaVar("CMS_fakeH_p2_32018","p2_32018","6.2231-0.33519*(@0-125)",ROOT.RooArgList(MH))
             fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_32018, p2_32018)
 
     elif(year == '2017'):
@@ -226,78 +223,73 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, usecfacto
 
         # Wrong signal combination events
         if (channel=='4mu'):
-            p1_12017 = ROOT.RooRealVar("CMS_fakeH_p1_12017","p1_12017",165.0, 145.0, 185.0)
-            p3_12017 = ROOT.RooRealVar("CMS_fakeH_p3_12017","p3_12017",89.0, 84.0,94.0)
-            p2_12017 = ROOT.RooFormulaVar("CMS_fakeH_p2_12017","p2_12017","0.72*@0-@1",ROOT.RooArgList(p1_12017,p3_12017))
-            fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_12017, p2_12017)
+             p1_12017 = ROOT.RooFormulaVar("CMS_fakeH_p1_12017", "p1_12017","138.6940+0.20429*(@0-125)",ROOT.RooArgList(MH))
+             p2_12017 = ROOT.RooFormulaVar("CMS_fakeH_p2_12017","p2_12017","7.9421+0.20576*(@0-125)",ROOT.RooArgList(MH))
+             fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_12017, p2_12017)
         if (channel=='4e'):
-            p1_22017 = ROOT.RooRealVar("CMS_fakeH_p1_22017","p1_22017",165.0, 145.0, 185.0)
-            p3_22017 = ROOT.RooRealVar("CMS_fakeH_p3_22017","p3_22017",89.0, 84.0,94.0)
-            p2_22017 = ROOT.RooFormulaVar("CMS_fakeH_p2_22017","p2_22017","0.72*@0-@1",ROOT.RooArgList(p1_22017,p3_22017))
+            p1_22017 = ROOT.RooFormulaVar("CMS_fakeH_p1_22017","p1_22017","138.7637+0.99835*(@0-125)",ROOT.RooArgList(MH))
+            p2_22017 = ROOT.RooFormulaVar("CMS_fakeH_p2_22017","p2_22017","7.3739+0.00204*(@0-125)",ROOT.RooArgList(MH))
             fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_22017, p2_22017)
         if (channel=='2e2mu'):
-            p1_32017 = ROOT.RooRealVar("CMS_fakeH_p1_32017","p1_32017",165.0, 145.0, 185.0)
-            p3_32017 = ROOT.RooRealVar("CMS_fakeH_p3_32017","p3_32017",89.0, 84.0,94.0)
-            p2_32017 = ROOT.RooFormulaVar("CMS_fakeH_p2_32017","p2_32017","0.72*@0-@1",ROOT.RooArgList(p1_32017,p3_32017))
+            p1_32017 = ROOT.RooFormulaVar("CMS_fakeH_p1_32017","p1_32017","137.4325-0.76521*(@0-125)",ROOT.RooArgList(MH))
+            p2_32017 = ROOT.RooFormulaVar("CMS_fakeH_p2_32017","p2_32017","7.0264-0.48404*(@0-125)",ROOT.RooArgList(MH))
             fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_32017, p2_32017)
 
     elif(year == '2016'):
-          CMS_zz4l_mean_m_sig_2016 = ROOT.RooRealVar("CMS_zz4l_mean_m_sig_2016","CMS_zz4l_mean_m_sig_2016",-10,10)
-          CMS_zz4l_mean_e_sig_2016 = ROOT.RooRealVar("CMS_zz4l_mean_e_sig_2016","CMS_zz4l_mean_e_sig_2016",-10,10)
-          CMS_zz4l_sigma_m_sig_2016 = ROOT.RooRealVar("CMS_zz4l_sigma_m_sig_2016","CMS_zz4l_sigma_m_sig_2016",-10,10)
-          CMS_zz4l_sigma_e_sig_2016 = ROOT.RooRealVar("CMS_zz4l_sigma_e_sig_2016","CMS_zz4l_sigma_e_sig_2016",-10,10)
-          lumi = ROOT.RooRealVar("lumi_132016","lumi_132016", 35.9)
-          if (channel=='2e2mu'):
-              CMS_zz4l_mean_m_err_3_2016 = ROOT.RooRealVar("CMS_zz4l_mean_m_err_3_2016","CMS_zz4l_mean_m_err_3_2016",0.0004,0.0004,0.0004)
-              CMS_zz4l_mean_e_err_3_2016 = ROOT.RooRealVar("CMS_zz4l_mean_e_err_3_2016","CMS_zz4l_mean_e_err_3_2016",0.003,0.003,0.003)
-              CMS_zz4l_n_sig_3_2016 = ROOT.RooRealVar("CMS_zz4l_n_sig_3_2016","CMS_zz4l_n_sig_3_2016",-10,10)
-              CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_mean_sig_3_centralValue_2e2mu" + recobin + "2016", "(124.539+(-0.00679774+1)*(@0-125)) + (@0*@1*@3 + @0*@2*@4)/2", ROOT.RooArgList(MH,CMS_zz4l_mean_m_sig_2016,CMS_zz4l_mean_e_sig_2016,CMS_zz4l_mean_m_err_3_2016,CMS_zz4l_mean_e_err_3_2016))
-              CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2016","CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2016","@0",ROOT.RooArgList(CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2016))
-              CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_sigma_sig_3_centralValue_2e2mu" + recobin + "2016", "(1.64632+(0.016435)*(@0-125))*(TMath::Sqrt((1+@1)*(1+@2)))",ROOT.RooArgList(MH,CMS_zz4l_sigma_m_sig_2016,CMS_zz4l_sigma_e_sig_2016))
-              CMS_zz4l_alpha_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_alpha_3_centralValue_2e2mu" + recobin + "2016","(0.905389+(0.0029819)*(@0-125))",ROOT.RooArgList(MH))
-              CMS_zz4l_n_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_n_3_centralValue_2e2mu" + recobin + "2016","(3.90164+(0)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_n_sig_3_2016))
-              CMS_zz4l_alpha2_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_alpha2_3_centralValue_2e2mu" + recobin + "2016","(1.5737+(0.00776476)*(@0-125))",ROOT.RooArgList(MH))
-              CMS_zz4l_n2_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n2_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_n2_3_centralValue_2e2mu" + recobin + "2016","(4.33416+(0)*(@0-125))",ROOT.RooArgList(MH))
-              trueH = ROOT.RooDoubleCB("trueH", "DoubleCB", m, CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2016, CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2016, CMS_zz4l_alpha_3_centralValue_2e2murecobin2016, CMS_zz4l_n_3_centralValue_2e2murecobin2016, CMS_zz4l_alpha2_3_centralValue_2e2murecobin2016, CMS_zz4l_n2_3_centralValue_2e2murecobin2016)
-          if (channel=='4e'):
-              CMS_zz4l_mean_e_err_2_2016 = ROOT.RooRealVar("CMS_zz4l_mean_e_err_2_2016","CMS_zz4l_mean_e_err_2_2016",0.003,0.003,0.003)
-              CMS_zz4l_n_sig_2_2016 = ROOT.RooRealVar("CMS_zz4l_n_sig_2_2016","CMS_zz4l_n_sig_2_2016",-10,10)
-              CMS_zz4l_mean_sig_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_2_centralValue_4e" + recobin + "2016","CMS_zz4l_mean_sig_2_centralValue_4e" + recobin + "2016", "(124.194+(-0.0123934+1)*(@0-125)) + @0*@1*@2", ROOT.RooArgList(MH,CMS_zz4l_mean_e_sig_2016,CMS_zz4l_mean_e_err_2_2016))
-              CMS_zz4l_mean_sig_NoConv_2_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_NoConv_2_4erecobin2016","CMS_zz4l_mean_sig_NoConv_2_4erecobin2016","@0",ROOT.RooArgList(CMS_zz4l_mean_sig_2_centralValue_4erecobin2016))
-              CMS_zz4l_sigma_sig_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_sigma_sig_2_centralValue_4e" + recobin + "2016","CMS_zz4l_sigma_sig_2_centralValue_4e" + recobin + "2016", "(2.09076+(0.0153247)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_sigma_e_sig_2016))
-              CMS_zz4l_alpha_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha_2_centralValue_4e" + recobin + "2016","CMS_zz4l_alpha_2_centralValue_4e" + recobin + "2016","(0.778691+(-0.00177387)*(@0-125))",ROOT.RooArgList(MH))
-              CMS_zz4l_n_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n_2_centralValue_4e" + recobin + "2016","CMS_zz4l_n_2_centralValue_4e" + recobin + "2016","(6.85936+(0)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_n_sig_2_2016))
-              CMS_zz4l_alpha2_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha2_2_centralValue_4e" + recobin + "2016","CMS_zz4l_alpha2_2_centralValue_4e" + recobin + "2016","(1.47389+(0.00503384)*(@0-125))",ROOT.RooArgList(MH))
-              CMS_zz4l_n2_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n2_2_centralValue_4e" + recobin + "2016","CMS_zz4l_n2_2_centralValue_4e" + recobin + "2016","(7.24158+(0)*(@0-125))",ROOT.RooArgList(MH))
-              trueH = ROOT.RooDoubleCB("trueH", "DoubleCB", m, CMS_zz4l_mean_sig_2_centralValue_4erecobin2016, CMS_zz4l_sigma_sig_2_centralValue_4erecobin2016, CMS_zz4l_alpha_2_centralValue_4erecobin2016, CMS_zz4l_n_2_centralValue_4erecobin2016, CMS_zz4l_alpha2_2_centralValue_4erecobin2016, CMS_zz4l_n2_2_centralValue_4erecobin2016)
-          if (channel=='4mu'):
-              CMS_zz4l_mean_m_err_1_2016 = ROOT.RooRealVar("CMS_zz4l_mean_m_err_1_2016","CMS_zz4l_mean_m_err_1_2016",0.0004,0.0004,0.0004)
-              CMS_zz4l_n_sig_1_2016 = ROOT.RooRealVar("CMS_zz4l_n_sig_1_2016","CMS_zz4l_n_sig_1_2016",-10,10)
-              CMS_zz4l_mean_sig_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_mean_sig_1_centralValue_4mu" + recobin + "2016", "(124.801+(-0.00230642+1)*(@0-125)) + @0*@1*@2",ROOT.RooArgList(MH,CMS_zz4l_mean_m_sig_2016,CMS_zz4l_mean_m_err_1_2016))
-              CMS_zz4l_mean_sig_NoConv_1_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_NoConv_1_4murecobin2016","CMS_zz4l_mean_sig_NoConv_1_4murecobin2016","@0",ROOT.RooArgList(CMS_zz4l_mean_sig_1_centralValue_4murecobin2016))
-              CMS_zz4l_sigma_sig_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_sigma_sig_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_sigma_sig_1_centralValue_4mu" + recobin + "2016", "(1.20385+(0.00862539)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_sigma_m_sig_2016))
-              CMS_zz4l_alpha_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_alpha_1_centralValue_4mu" + recobin + "2016","(1.29006+(-0.0040219)*(@0-125))",ROOT.RooArgList(MH))
-              CMS_zz4l_n_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_n_1_centralValue_4mu" + recobin + "2016","(2.1216+(0)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_n_sig_1_2016))
-              CMS_zz4l_alpha2_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_alpha2_1_centralValue_4mu" + recobin + "2016","(1.90093+(-0.0017352)*(@0-125))",ROOT.RooArgList(MH))
-              CMS_zz4l_n2_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n2_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_n2_1_centralValue_4mu" + recobin + "2016","(2.7194+(0)*(@0-125))",ROOT.RooArgList(MH))
-              trueH = ROOT.RooDoubleCB("trueH", "DoubleCB", m, CMS_zz4l_mean_sig_1_centralValue_4murecobin2016, CMS_zz4l_sigma_sig_1_centralValue_4murecobin2016, CMS_zz4l_alpha_1_centralValue_4murecobin2016, CMS_zz4l_n_1_centralValue_4murecobin2016, CMS_zz4l_alpha2_1_centralValue_4murecobin2016, CMS_zz4l_n2_1_centralValue_4murecobin2016)
+        CMS_zz4l_mean_m_sig_2016 = ROOT.RooRealVar("CMS_zz4l_mean_m_sig_2016","CMS_zz4l_mean_m_sig_2016",-10,10)
+        CMS_zz4l_mean_e_sig_2016 = ROOT.RooRealVar("CMS_zz4l_mean_e_sig_2016","CMS_zz4l_mean_e_sig_2016",-10,10)
+        CMS_zz4l_sigma_m_sig_2016 = ROOT.RooRealVar("CMS_zz4l_sigma_m_sig_2016","CMS_zz4l_sigma_m_sig_2016",-10,10)
+        CMS_zz4l_sigma_e_sig_2016 = ROOT.RooRealVar("CMS_zz4l_sigma_e_sig_2016","CMS_zz4l_sigma_e_sig_2016",-10,10)
+        lumi = ROOT.RooRealVar("lumi_132016","lumi_132016", 35.9)
+        if (channel=='2e2mu'):
+            CMS_zz4l_mean_m_err_3_2016 = ROOT.RooRealVar("CMS_zz4l_mean_m_err_3_2016","CMS_zz4l_mean_m_err_3_2016",0.0004,0.0004,0.0004)
+            CMS_zz4l_mean_e_err_3_2016 = ROOT.RooRealVar("CMS_zz4l_mean_e_err_3_2016","CMS_zz4l_mean_e_err_3_2016",0.003,0.003,0.003)
+            CMS_zz4l_n_sig_3_2016 = ROOT.RooRealVar("CMS_zz4l_n_sig_3_2016","CMS_zz4l_n_sig_3_2016",-10,10)
+            CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_mean_sig_3_centralValue_2e2mu" + recobin + "2016", "(124.539+(-0.00679774+1)*(@0-125)) + (@0*@1*@3 + @0*@2*@4)/2", ROOT.RooArgList(MH,CMS_zz4l_mean_m_sig_2016,CMS_zz4l_mean_e_sig_2016,CMS_zz4l_mean_m_err_3_2016,CMS_zz4l_mean_e_err_3_2016))
+            CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2016","CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2016","@0",ROOT.RooArgList(CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2016))
+            CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_sigma_sig_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_sigma_sig_3_centralValue_2e2mu" + recobin + "2016", "(1.64632+(0.016435)*(@0-125))*(TMath::Sqrt((1+@1)*(1+@2)))",ROOT.RooArgList(MH,CMS_zz4l_sigma_m_sig_2016,CMS_zz4l_sigma_e_sig_2016))
+            CMS_zz4l_alpha_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_alpha_3_centralValue_2e2mu" + recobin + "2016","(0.905389+(0.0029819)*(@0-125))",ROOT.RooArgList(MH))
+            CMS_zz4l_n_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_n_3_centralValue_2e2mu" + recobin + "2016","(3.90164+(0)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_n_sig_3_2016))
+            CMS_zz4l_alpha2_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha2_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_alpha2_3_centralValue_2e2mu" + recobin + "2016","(1.5737+(0.00776476)*(@0-125))",ROOT.RooArgList(MH))
+            CMS_zz4l_n2_3_centralValue_2e2murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n2_3_centralValue_2e2mu" + recobin + "2016","CMS_zz4l_n2_3_centralValue_2e2mu" + recobin + "2016","(4.33416+(0)*(@0-125))",ROOT.RooArgList(MH))
+            trueH = ROOT.RooDoubleCB("trueH", "DoubleCB", m, CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2016, CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2016, CMS_zz4l_alpha_3_centralValue_2e2murecobin2016, CMS_zz4l_n_3_centralValue_2e2murecobin2016, CMS_zz4l_alpha2_3_centralValue_2e2murecobin2016, CMS_zz4l_n2_3_centralValue_2e2murecobin2016)
+        if (channel=='4e'):
+            CMS_zz4l_mean_e_err_2_2016 = ROOT.RooRealVar("CMS_zz4l_mean_e_err_2_2016","CMS_zz4l_mean_e_err_2_2016",0.003,0.003,0.003)
+            CMS_zz4l_n_sig_2_2016 = ROOT.RooRealVar("CMS_zz4l_n_sig_2_2016","CMS_zz4l_n_sig_2_2016",-10,10)
+            CMS_zz4l_mean_sig_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_2_centralValue_4e" + recobin + "2016","CMS_zz4l_mean_sig_2_centralValue_4e" + recobin + "2016", "(124.194+(-0.0123934+1)*(@0-125)) + @0*@1*@2", ROOT.RooArgList(MH,CMS_zz4l_mean_e_sig_2016,CMS_zz4l_mean_e_err_2_2016))
+            CMS_zz4l_mean_sig_NoConv_2_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_NoConv_2_4erecobin2016","CMS_zz4l_mean_sig_NoConv_2_4erecobin2016","@0",ROOT.RooArgList(CMS_zz4l_mean_sig_2_centralValue_4erecobin2016))
+            CMS_zz4l_sigma_sig_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_sigma_sig_2_centralValue_4e" + recobin + "2016","CMS_zz4l_sigma_sig_2_centralValue_4e" + recobin + "2016", "(2.09076+(0.0153247)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_sigma_e_sig_2016))
+            CMS_zz4l_alpha_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha_2_centralValue_4e" + recobin + "2016","CMS_zz4l_alpha_2_centralValue_4e" + recobin + "2016","(0.778691+(-0.00177387)*(@0-125))",ROOT.RooArgList(MH))
+            CMS_zz4l_n_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n_2_centralValue_4e" + recobin + "2016","CMS_zz4l_n_2_centralValue_4e" + recobin + "2016","(6.85936+(0)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_n_sig_2_2016))
+            CMS_zz4l_alpha2_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha2_2_centralValue_4e" + recobin + "2016","CMS_zz4l_alpha2_2_centralValue_4e" + recobin + "2016","(1.47389+(0.00503384)*(@0-125))",ROOT.RooArgList(MH))
+            CMS_zz4l_n2_2_centralValue_4erecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n2_2_centralValue_4e" + recobin + "2016","CMS_zz4l_n2_2_centralValue_4e" + recobin + "2016","(7.24158+(0)*(@0-125))",ROOT.RooArgList(MH))
+            trueH = ROOT.RooDoubleCB("trueH", "DoubleCB", m, CMS_zz4l_mean_sig_2_centralValue_4erecobin2016, CMS_zz4l_sigma_sig_2_centralValue_4erecobin2016, CMS_zz4l_alpha_2_centralValue_4erecobin2016, CMS_zz4l_n_2_centralValue_4erecobin2016, CMS_zz4l_alpha2_2_centralValue_4erecobin2016, CMS_zz4l_n2_2_centralValue_4erecobin2016)
+        if (channel=='4mu'):
+            CMS_zz4l_mean_m_err_1_2016 = ROOT.RooRealVar("CMS_zz4l_mean_m_err_1_2016","CMS_zz4l_mean_m_err_1_2016",0.0004,0.0004,0.0004)
+            CMS_zz4l_n_sig_1_2016 = ROOT.RooRealVar("CMS_zz4l_n_sig_1_2016","CMS_zz4l_n_sig_1_2016",-10,10)
+            CMS_zz4l_mean_sig_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_mean_sig_1_centralValue_4mu" + recobin + "2016", "(124.801+(-0.00230642+1)*(@0-125)) + @0*@1*@2",ROOT.RooArgList(MH,CMS_zz4l_mean_m_sig_2016,CMS_zz4l_mean_m_err_1_2016))
+            CMS_zz4l_mean_sig_NoConv_1_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_mean_sig_NoConv_1_4murecobin2016","CMS_zz4l_mean_sig_NoConv_1_4murecobin2016","@0",ROOT.RooArgList(CMS_zz4l_mean_sig_1_centralValue_4murecobin2016))
+            CMS_zz4l_sigma_sig_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_sigma_sig_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_sigma_sig_1_centralValue_4mu" + recobin + "2016", "(1.20385+(0.00862539)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_sigma_m_sig_2016))
+            CMS_zz4l_alpha_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_alpha_1_centralValue_4mu" + recobin + "2016","(1.29006+(-0.0040219)*(@0-125))",ROOT.RooArgList(MH))
+            CMS_zz4l_n_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_n_1_centralValue_4mu" + recobin + "2016","(2.1216+(0)*(@0-125))*(1+@1)",ROOT.RooArgList(MH,CMS_zz4l_n_sig_1_2016))
+            CMS_zz4l_alpha2_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_alpha2_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_alpha2_1_centralValue_4mu" + recobin + "2016","(1.90093+(-0.0017352)*(@0-125))",ROOT.RooArgList(MH))
+            CMS_zz4l_n2_1_centralValue_4murecobin2016 = ROOT.RooFormulaVar("CMS_zz4l_n2_1_centralValue_4mu" + recobin + "2016","CMS_zz4l_n2_1_centralValue_4mu" + recobin + "2016","(2.7194+(0)*(@0-125))",ROOT.RooArgList(MH))
+            trueH = ROOT.RooDoubleCB("trueH", "DoubleCB", m, CMS_zz4l_mean_sig_1_centralValue_4murecobin2016, CMS_zz4l_sigma_sig_1_centralValue_4murecobin2016, CMS_zz4l_alpha_1_centralValue_4murecobin2016, CMS_zz4l_n_1_centralValue_4murecobin2016, CMS_zz4l_alpha2_1_centralValue_4murecobin2016, CMS_zz4l_n2_1_centralValue_4murecobin2016)
 
-          # Wrong signal combination events
-          if (channel=='4mu'):
-              p1_12016 = ROOT.RooRealVar("CMS_fakeH_p1_12016","p1_12016",165.0, 145.0, 185.0)
-              p3_12016 = ROOT.RooRealVar("CMS_fakeH_p3_12016","p3_12016",89.0, 84.0,94.0)
-              p2_12016 = ROOT.RooFormulaVar("CMS_fakeH_p2_12016","p2_12016","0.72*@0-@1",ROOT.RooArgList(p1_12016,p3_12016))
-              fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_12016, p2_12016)
-          if (channel=='4e'):
-              p1_22016 = ROOT.RooRealVar("CMS_fakeH_p1_22016","p1_22016",165.0, 145.0, 185.0)
-              p3_22016 = ROOT.RooRealVar("CMS_fakeH_p3_22016","p3_22016",89.0, 84.0,94.0)
-              p2_22016 = ROOT.RooFormulaVar("CMS_fakeH_p2_22016","p2_22016","0.72*@0-@1",ROOT.RooArgList(p1_22016,p3_22016))
-              fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_22016, p2_22016)
-          if (channel=='2e2mu'):
-              p1_32016 = ROOT.RooRealVar("CMS_fakeH_p1_32016","p1_32016",165.0, 145.0, 185.0)
-              p3_32016 = ROOT.RooRealVar("CMS_fakeH_p3_32016","p3_32016",89.0, 84.0,94.0)
-              p2_32016 = ROOT.RooFormulaVar("CMS_fakeH_p2_32016","p2_32016","0.72*@0-@1",ROOT.RooArgList(p1_32016,p3_32016))
-              fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_32016, p2_32016)
+        # Wrong signal combination events
+        if (channel=='4mu'):
+            p1_12016 = ROOT.RooFormulaVar("CMS_fakeH_p1_12016", "p1_12016","125.901940+0.21561*(@0-125)",ROOT.RooArgList(MH))
+            p2_12016 = ROOT.RooFormulaVar("CMS_fakeH_p2_12016","p2_12016","10.939367+0.04991*(@0-125)",ROOT.RooArgList(MH))
+            fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_12016, p2_12016)
+        if (channel=='4e'):
+            p1_22016 = ROOT.RooFormulaVar("CMS_fakeH_p1_22016","p1_22016","139.491901-0.84797*(@0-125)",ROOT.RooArgList(MH))
+            p2_22016 = ROOT.RooFormulaVar("CMS_fakeH_p2_22016","p2_22016","6.089534-0.20401*(@0-125)",ROOT.RooArgList(MH))
+            fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_22016, p2_22016)
+        if (channel=='2e2mu'):
+            p1_32016 = ROOT.RooFormulaVar("CMS_fakeH_p1_32016","p1_32016","137.008284-0.68856*(@0-125)",ROOT.RooArgList(MH))
+            p2_32016 = ROOT.RooFormulaVar("CMS_fakeH_p2_32016","p2_32016","6.797275-0.32085*(@0-125)",ROOT.RooArgList(MH))
+            fakeH = ROOT.RooLandau("fakeH", "landau", m, p1_32016, p2_32016)
+
 
     # Out of acceptance events
     # (same shape as in acceptance shape)
