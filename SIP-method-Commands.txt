@@ -1,0 +1,61 @@
+
+
+----------------
+1st step: RunCoefficients.py
+
+cd coefficients
+export PYTHONPATH=../helperstuff:$PYTHONPATH
+
+python RunCoefficients.py --obsName 'mass4l' --year 'Full'
+
+python RunCoefficients.py --obsName 'mass4l' --year 'Full' --interpolation --hypothesis '24' 
+python RunCoefficients.py --obsName 'mass4l' --year 'Full' --interpolation --hypothesis '26' 
+
+
+
+-------------------
+
+2nd step : RunInterpolation.py
+
+cd coefficients
+export PYTHONPATH=../helperstuff:$PYTHONPATH
+
+python3 RunInterpolation.py --obsName 'mass4l' --year 'Full'
+python3 RunInterpolation.py --obsName 'mass4l' --year '2016'
+python3 RunInterpolation.py --obsName 'mass4l' --year '2017'
+python3 RunInterpolation.py --obsName 'mass4l' --year '2018'
+python3 RunInterpolation.py --obsName 'mass4l' --year 'Full' --nnlops
+
+-----------
+
+3rd step : RunTemplates.py
+cd templates
+
+python RunTemplates.py --obsName 'mass4l' --year 'Full' 
+
+python plot_templates.py --obsName 'mass4l' --year 'Full' 
+
+
+Combination coefficients : ???
+
+
+------------
+
+4th step : RunFiducialXS.py
+
+cd fit
+python RunFiducialXS.py --obsName 'mass4l' --year 'Full' 
+
+
+---------------
+
+5th step
+
+python plot_LLScan.py --obsName 'mass4l' --year 'Full'
+
+
+-------------
+
+6th step
+
+python impacts.py --obsName 'mass4l' --year 'Full
