@@ -5,10 +5,11 @@ import ROOT
 from collections import OrderedDict as od
 import os,sys,subprocess
 from math import trunc
+import re
 
 sys.path.append('../helperstuff')
 
-from paths import path
+from paths import *
 
 # Considering or not decimals in bin boundaries
 decimal = {
@@ -66,6 +67,25 @@ PARAM_PATH = os.path.join(PARAM_PATH, "param")
 sys.path.append('../../inputs/')
 sys.path.append('../../templates/')
 
+#Loads from txt file the normalization and shape for Z+jets using SIP method
+#return (RooRealVar=bkg_zjets_norm, RooLandau=bkg_zjets, RooRealVar location, RooRealVar scale)
+def loadZjets(year, channel, m4l_mass):
+    file_data = getZjets_txt(year, channel)
+    
+    zjets_norm = ROOT.RooRealVar("bkg_zjets_norm", "Normalization of Z+jets background", getFloatValueFromFileText(file_data, "Norm"))
+    #zjets_norm.setError(getFloatValueFromFileText(file_data, "NormError"))
+
+    landauLocation = ROOT.RooRealVar("bkg_zjets_landau_locationParam", "Z+jets Landau location parameter", getFloatValueFromFileText(file_data, "locationParameter"))
+    #landauLocation.setError(getFloatValueFromFileText(file_data, "locationParameterError"))
+
+    landauScale = ROOT.RooRealVar("bkg_zjets_landau_scaleParam", "Z+jets Landau scale parameter", getFloatValueFromFileText(file_data, "scaleParameter"))
+    #landauScale.setError(getFloatValueFromFileText(file_data, "scaleParameterError"))
+
+    landau = ROOT.RooLandau("bkg_zjets", "Landau for Z+jets bkg", m4l_mass, landauLocation, landauScale)
+    
+    return (zjets_norm, landau, landauLocation, landauScale)
+
+
 def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH, modelName, physicalModel, year, JES, doubleDiff, lowerBound, upperBound, rawObsName):
     print '\n'
     print 'Creating WorkSpace', year
@@ -115,7 +135,7 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
     _temp = __import__('higgs_xsbr_13TeV', globals(), locals(), ['higgs_xs','higgs4l_br'], -1)
     higgs_xs = _temp.higgs_xs
     higgs4l_br = _temp.higgs4l_br
-
+    #Import files created by RunTemplates.py
     _temp = __import__('inputs_bkg_'+obsName+'_'+year, globals(), locals(), ['fractionsBackground'], -1)
     fractionsBackground = _temp.fractionsBackground
 
@@ -708,33 +728,33 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
     frac_ggzz = fractionsBackground['ggzz_'+channel+'_'+obsName+'_'+recobin]
     frac_ggzz_var = ROOT.RooRealVar("frac_ggzz_"+recobin+"_"+channel+"_"+year,"frac_ggzz_"+recobin+"_"+channel+"_"+year, frac_ggzz);
 
-    frac_zjets = fractionsBackground['ZJetsCR_'+channel+'_'+obsName+'_'+recobin]
-    frac_zjets_var = ROOT.RooRealVar("frac_zjet_"+recobin+"_"+channel+"_"+year,"frac_zjet_"+recobin+"_"+channel+"_"+year, frac_zjets);
+    #frac_zjets = fractionsBackground['ZJetsCR_'+channel+'_'+obsName+'_'+recobin]
+    #frac_zjets_var = ROOT.RooRealVar("frac_zjet_"+recobin+"_"+channel+"_"+year,"frac_zjet_"+recobin+"_"+channel+"_"+year, frac_zjets);
 
-    print obsBin,"frac_qqzz",frac_qqzz,"frac_ggzz",frac_ggzz,"frac_zjets",frac_zjets
+    print obsBin,"frac_qqzz",frac_qqzz,"frac_ggzz",frac_ggzz#,"frac_zjets",frac_zjets
 
     os.chdir('../../templates/'+year+"/"+obsName+"/")
 
     if doubleDiff and decimal[obsName]:
         template_qqzzName = "XSBackground_qqzz_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+"_"+str(obsBin_2nd_low)+"_"+str(obsBin_2nd_high)+".root"
         template_ggzzName = "XSBackground_ggzz_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+"_"+str(obsBin_2nd_low)+"_"+str(obsBin_2nd_high)+".root"
-        template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+"_"+str(obsBin_2nd_low)+"_"+str(obsBin_2nd_high)+".root"
+        #template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+"_"+str(obsBin_2nd_low)+"_"+str(obsBin_2nd_high)+".root"
     elif doubleDiff:
         template_qqzzName = "XSBackground_qqzz_"+channel+"_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+"_"+str(trunc(obsBin_2nd_low))+"_"+str(trunc(obsBin_2nd_high))+".root"
         template_ggzzName = "XSBackground_ggzz_"+channel+"_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+"_"+str(trunc(obsBin_2nd_low))+"_"+str(trunc(obsBin_2nd_high))+".root"
-        template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+"_"+str(trunc(obsBin_2nd_low))+"_"+str(trunc(obsBin_2nd_high))+".root"
+        #template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+"_"+str(trunc(obsBin_2nd_low))+"_"+str(trunc(obsBin_2nd_high))+".root"
     elif decimal[obsName]:
         template_qqzzName = "XSBackground_qqzz_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+".root"
         template_ggzzName = "XSBackground_ggzz_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+".root"
-        template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+".root"
+        #template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+".root"
     elif not doubleDiff:
         template_qqzzName = "XSBackground_qqzz_"+channel+"_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+".root"
         template_ggzzName = "XSBackground_ggzz_"+channel+"_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+".root"
-        template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+".root"
+        #template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+".root"
     if obsName == 'rapidity4l':
         template_qqzzName = "XSBackground_qqzz_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+".root"
         template_ggzzName = "XSBackground_ggzz_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+".root"
-        template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+".root"
+        #template_zjetsName = "XSBackground_ZJetsCR_"+channel+"_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+".root"
 
     # if (not obsName=="mass4l"):
     #     template_zjetsName = "/eos/user/a/atarabin/CMSSW_10_2_13/src/HiggsAnalysis/FiducialXS/templates/"+year+"/"+obsName+"/XSBackground_ZJetsCR_AllChans_"+obsName+"_"+obsBin_low+"_"+obsBin_high+".root"
@@ -761,16 +781,23 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
     # elif doubleDiff: ggzzTemplate = ggzzTempFile.Get("m4l_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+"_"+str(trunc(obsBin_2nd_low))+"_"+str(trunc(obsBin_2nd_high)))
     print 'ggZZ bins',ggzzTemplate.GetNbinsX(),ggzzTemplate.GetBinLowEdge(1),ggzzTemplate.GetBinLowEdge(ggzzTemplate.GetNbinsX()+1)
 
-    zjetsTempFile = ROOT.TFile(template_zjetsName,"READ")
-    if decimal[obsName] and doubleDiff: zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+"_"+str(obsBin_2nd_low)+"_"+str(obsBin_2nd_high))
-    elif decimal[obsName]: zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high))
-    elif not doubleDiff: zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high)))
-    elif doubleDiff: zjetsTemplate = qqzzTempFile.Get("m4l_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+"_"+str(trunc(obsBin_2nd_low))+"_"+str(trunc(obsBin_2nd_high)))
+    # zjetsTempFile = ROOT.TFile(template_zjetsName,"READ")
+    # if decimal[obsName] and doubleDiff: zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high)+"_"+str(obsBin_2nd_low)+"_"+str(obsBin_2nd_high))
+    # elif decimal[obsName]: zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high))
+    # elif not doubleDiff: zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high)))
+    # elif doubleDiff: zjetsTemplate = qqzzTempFile.Get("m4l_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+"_"+str(trunc(obsBin_2nd_low))+"_"+str(trunc(obsBin_2nd_high))) # ! typo
     # if obsName == 'rapidity4l': zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+str(obsBin_low)+"_"+str(obsBin_high))
     # elif doubleDiff: zjetsTemplate = zjetsTempFile.Get("m4l_"+obsName+"_"+str(trunc(obsBin_low))+"_"+str(trunc(obsBin_high))+"_"+str(trunc(obsBin_2nd_low))+"_"+str(trunc(obsBin_2nd_high)))
-    print 'zjets bins',zjetsTemplate.GetNbinsX(),zjetsTemplate.GetBinLowEdge(1),zjetsTemplate.GetBinLowEdge(zjetsTemplate.GetNbinsX()+1)
+    #print 'zjets bins',zjetsTemplate.GetNbinsX(),zjetsTemplate.GetBinLowEdge(1),zjetsTemplate.GetBinLowEdge(zjetsTemplate.GetNbinsX()+1)
 
-    os.chdir('../../../datacard/datacard_'+year)
+
+    #####   ---  Load Z+jets shape and normalization
+    os.chdir('../../../')
+    #even if we don't use zjets_landau_location and zjets_landau_shape, we need to keep a reference to them otherwise they get destroyed and the pdf does not work
+    (zjets_norm, zjets_pdf, zjets_landau_location, zjets_landau_shape) = loadZjets(year, channel, m)
+
+
+    os.chdir('datacard/datacard_'+year)
 
     binscale = 3
     qqzzTemplateNew = ROOT.TH1F("qqzzTemplateNew","qqzzTemplateNew",binscale*qqzzTemplate.GetNbinsX(),qqzzTemplate.GetBinLowEdge(1),qqzzTemplate.GetBinLowEdge(qqzzTemplate.GetNbinsX()+1))
@@ -781,29 +808,30 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
     for i in range(1,ggzzTemplate.GetNbinsX()+1):
         for j in range(binscale):
             ggzzTemplateNew.SetBinContent((i-1)*binscale+j+1,ggzzTemplate.GetBinContent(i)/binscale)
-    zjetsTemplateNew = ROOT.TH1F("zjetsTemplateNew","zjetsTemplateNew",binscale*zjetsTemplate.GetNbinsX(),zjetsTemplate.GetBinLowEdge(1),zjetsTemplate.GetBinLowEdge(zjetsTemplate.GetNbinsX()+1))
-    for i in range(1,zjetsTemplate.GetNbinsX()+1):
-        for j in range(binscale):
-            zjetsTemplateNew.SetBinContent((i-1)*binscale+j+1,zjetsTemplate.GetBinContent(i)/binscale)
+    #zjetsTemplateNew = ROOT.TH1F("zjetsTemplateNew","zjetsTemplateNew",binscale*zjetsTemplate.GetNbinsX(),zjetsTemplate.GetBinLowEdge(1),zjetsTemplate.GetBinLowEdge(zjetsTemplate.GetNbinsX()+1))
+    #for i in range(1,zjetsTemplate.GetNbinsX()+1):
+    #    for j in range(binscale):
+    #        zjetsTemplateNew.SetBinContent((i-1)*binscale+j+1,zjetsTemplate.GetBinContent(i)/binscale) # ????
 
     qqzzTemplateName = "qqzz_"+channel+recobin+year
     ggzzTemplateName = "ggzz_"+channel+recobin+year
-    zjetsTemplateName = "zjets_"+channel+recobin+year
+    #zjetsTemplateName = "zjets_"+channel+recobin+year
 
     qqzzTempDataHist = ROOT.RooDataHist(qqzzTemplateName,qqzzTemplateName,ROOT.RooArgList(m),qqzzTemplateNew)
     ggzzTempDataHist = ROOT.RooDataHist(ggzzTemplateName,ggzzTemplateName,ROOT.RooArgList(m),ggzzTemplateNew)
-    zjetsTempDataHist = ROOT.RooDataHist(zjetsTemplateName,zjetsTemplateName,ROOT.RooArgList(m),zjetsTemplateNew)
+    #zjetsTempDataHist = ROOT.RooDataHist(zjetsTemplateName,zjetsTemplateName,ROOT.RooArgList(m),zjetsTemplateNew)
 
     qqzzTemplatePdf = ROOT.RooHistPdf("qqzz","qqzz",ROOT.RooArgSet(m),qqzzTempDataHist)
     ggzzTemplatePdf = ROOT.RooHistPdf("ggzz","ggzz",ROOT.RooArgSet(m),ggzzTempDataHist)
-    zjetsTemplatePdf = ROOT.RooHistPdf("zjets","zjets",ROOT.RooArgSet(m),zjetsTempDataHist)
+    #zjetsTemplatePdf = ROOT.RooHistPdf("zjets","zjets",ROOT.RooArgSet(m),zjetsTempDataHist)
+
 
     # bkg fractions in reco bin; implemented in terms of fractions
 
     #if( not (obsName=='nJets' or ("jet" in obsName) ) or (not doJES)) :
     qqzz_norm = ROOT.RooFormulaVar("bkg_qqzz_norm", "@0", ROOT.RooArgList(frac_qqzz_var) )
     ggzz_norm = ROOT.RooFormulaVar("bkg_ggzz_norm", "@0", ROOT.RooArgList(frac_ggzz_var) )
-    zjets_norm = ROOT.RooFormulaVar("bkg_zjets_norm", "@0", ROOT.RooArgList(frac_zjets_var) )
+    
     #else :
     #    qqzz_norm = ROOT.RooFormulaVar("bkg_qqzz_norm", "@0*(1-@1)", ROOT.RooArgList(frac_qqzz_var, JES_qqzz_rfv) )
     #    ggzz_norm = ROOT.RooFormulaVar("bkg_ggzz_norm", "@0*(1-@1)", ROOT.RooArgList(frac_ggzz_var, JES_ggzz_rfv) )
@@ -845,6 +873,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
     wout = ROOT.RooWorkspace("w","w")
     if (channel=='2e2mu'):
         if (year == '2016'):
+            #Use getattr(wout, 'import') rather than wout.import because import is a reserved keywork in Python
+            #We could also use wout.Import
             getattr(wout,'import')(CMS_zz4l_mean_sig_3_centralValue_2e2murecobin2016,ROOT.RooFit.RecycleConflictNodes())
             getattr(wout,'import')(CMS_zz4l_mean_sig_NoConv_3_2e2murecobin2016,ROOT.RooFit.RecycleConflictNodes())
             getattr(wout,'import')(CMS_zz4l_sigma_sig_3_centralValue_2e2murecobin2016,ROOT.RooFit.RecycleConflictNodes())
@@ -958,9 +988,9 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
     getattr(wout,'import')(ggzzTemplatePdf,ROOT.RooFit.RecycleConflictNodes())
     getattr(wout,'import')(ggzz_norm,ROOT.RooFit.Silence())
 
-    zjetsTemplatePdf.SetName("bkg_zjets")
-    zjetsTemplatePdf.Print("v")
-    getattr(wout,'import')(zjetsTemplatePdf, ROOT.RooFit.RecycleConflictNodes(), ROOT.RooFit.Silence())
+    zjets_pdf.Print("v")
+    #getattr(wout,'import')(zjetsTemplatePdf, ROOT.RooFit.RecycleConflictNodes(), ROOT.RooFit.Silence())
+    getattr(wout,'import')(zjets_pdf)
     getattr(wout,'import')(zjets_norm,ROOT.RooFit.Silence())
 
     ## data

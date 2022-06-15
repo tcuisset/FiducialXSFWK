@@ -1,4 +1,5 @@
 import os,sys
+from paths import *
 
 
 def fixJes(jesnp):
@@ -195,7 +196,9 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     if zzfloating:
         file.write('1 1 '+str(expected_yield[int(year),'ZX',channel])+'\n')
     else:
-        file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
+        #Now Z+X background normalization is done using bkg_zjets_norm in the workspace
+        #file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
+        file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+'1'+'\n')
     file.write('------------ \n')
 
     if zzfloating:
@@ -272,12 +275,16 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
             file.write(eff_e[year+'_'+channel]+' ')
         file.write('-\n') # ZX
 
-    # ZX
+    # ZX Normalization uncertainty
     file.write('CMS_hzz'+channel+'_Zjets_'+year+' lnN ')
     # for i in range(nBins+4): # All except ZX
     for i in range(nBins+4): # All except ZX
         file.write('- ')
-    file.write(ZX[year+'_'+channel]+'\n')
+    zx_input = getZjets_txt(year, channel, "../")
+    zx_value = getFloatValueFromFileText(zx_input, "Norm")
+    zx_error = getFloatValueFromFileText(zx_input, "NormError")
+    zx_lnN_param = 1 + zx_error/zx_value
+    file.write(str(zx_lnN_param) +'\n')
 
     # Param
     if(channelNumber != 2):
@@ -482,7 +489,9 @@ def createDatacard_ggH(obsName, channel, nBins, obsBin, observableBins, physical
     for i in range(2*nBins+2):
         file.write('1.0 ')
     # file.write(str(bkg_qqzz[year+'_'+channel])+' '+str(bkg_ggzz[year+'_'+channel])+' '+str(bkg_zx[year+'_'+channel])+'\n') #Old implementation with hard coding bkg expectation values
-    file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
+#    file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
+        #Now Z+X background normalization is done using bkg_zjets_norm in the workspace
+        file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+'1'+'\n')
     file.write('------------ \n')
 
     # norm_fake
@@ -550,7 +559,11 @@ def createDatacard_ggH(obsName, channel, nBins, obsBin, observableBins, physical
     # for i in range(nBins+4): # All except ZX
     for i in range(2*nBins+4): # All except ZX
         file.write('- ')
-    file.write(ZX[year+'_'+channel]+'\n')
+    zx_input = getZjets_txt(year, channel, "../")
+    zx_value = getFloatValueFromFileText(zx_input, "Norm")
+    zx_error = getFloatValueFromFileText(zx_input, "NormError")
+    zx_lnN_param = 1 + zx_error/zx_value
+    file.write(str(zx_lnN_param) +'\n')
 
     # Param
     if(channelNumber != 2):
