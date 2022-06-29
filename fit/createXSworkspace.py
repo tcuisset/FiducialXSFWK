@@ -10,6 +10,7 @@ import re
 sys.path.append('../helperstuff')
 
 from paths import *
+from ZjetsSIP import *
 
 # Considering or not decimals in bin boundaries
 decimal = {
@@ -66,24 +67,6 @@ PARAM_PATH = os.path.join(PARAM_PATH, "param")
 
 sys.path.append('../../inputs/')
 sys.path.append('../../templates/')
-
-#Loads from txt file the normalization and shape for Z+jets using SIP method
-#return (RooRealVar=bkg_zjets_norm, RooLandau=bkg_zjets, RooRealVar location, RooRealVar scale)
-def loadZjets(year, channel, m4l_mass):
-    file_data = getZjets_txt(year, channel)
-    
-    zjets_norm = ROOT.RooRealVar("bkg_zjets_norm", "Normalization of Z+jets background", getFloatValueFromFileText(file_data, "Norm"))
-    #zjets_norm.setError(getFloatValueFromFileText(file_data, "NormError"))
-
-    landauLocation = ROOT.RooRealVar("bkg_zjets_landau_locationParam", "Z+jets Landau location parameter", getFloatValueFromFileText(file_data, "locationParameter"))
-    #landauLocation.setError(getFloatValueFromFileText(file_data, "locationParameterError"))
-
-    landauScale = ROOT.RooRealVar("bkg_zjets_landau_scaleParam", "Z+jets Landau scale parameter", getFloatValueFromFileText(file_data, "scaleParameter"))
-    #landauScale.setError(getFloatValueFromFileText(file_data, "scaleParameterError"))
-
-    landau = ROOT.RooLandau("bkg_zjets", "Landau for Z+jets bkg", m4l_mass, landauLocation, landauScale)
-    
-    return (zjets_norm, landau, landauLocation, landauScale)
 
 
 def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH, modelName, physicalModel, year, JES, doubleDiff, lowerBound, upperBound, rawObsName):
@@ -793,8 +776,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
 
     #####   ---  Load Z+jets shape and normalization
     os.chdir('../../../')
-    #even if we don't use zjets_landau_location and zjets_landau_shape, we need to keep a reference to them otherwise they get destroyed and the pdf does not work
-    (zjets_norm, zjets_pdf, zjets_landau_location, zjets_landau_shape) = loadZjets(year, channel, m)
+    zjets_data = ZjetsData(year, channel)
+    zjets_roofit_objects = ZjetsRoofitObjects(zjets_data, m)
 
 
     os.chdir('datacard/datacard_'+year)
@@ -988,10 +971,10 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
     getattr(wout,'import')(ggzzTemplatePdf,ROOT.RooFit.RecycleConflictNodes())
     getattr(wout,'import')(ggzz_norm,ROOT.RooFit.Silence())
 
-    zjets_pdf.Print("v")
+    zjets_roofit_objects.zjets_pdf.Print("v")
     #getattr(wout,'import')(zjetsTemplatePdf, ROOT.RooFit.RecycleConflictNodes(), ROOT.RooFit.Silence())
-    getattr(wout,'import')(zjets_pdf)
-    getattr(wout,'import')(zjets_norm,ROOT.RooFit.Silence())
+    getattr(wout,'import')(zjets_roofit_objects.zjets_pdf)
+    getattr(wout,'import')(zjets_roofit_objects.zjets_norm,ROOT.RooFit.Silence())
 
     ## data
     # getattr(wout,'import')(data_obs.reduce(ROOT.RooArgSet(m)),ROOT.RooFit.Silence()) #AT https://root-forum.cern.ch/t/rooworkspace-import-roofit-silence-does-not-work-when-importing-datasets/32591

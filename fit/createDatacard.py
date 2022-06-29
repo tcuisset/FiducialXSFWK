@@ -1,5 +1,7 @@
 import os,sys
 from paths import *
+from ZjetsSIP import *
+from repo.helperstuff.ZjetsSIP import ZjetsRoofitObjects
 
 
 def fixJes(jesnp):
@@ -280,9 +282,10 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     # for i in range(nBins+4): # All except ZX
     for i in range(nBins+4): # All except ZX
         file.write('- ')
-    zx_input = getZjets_txt(year, channel, "../")
-    zx_value = getFloatValueFromFileText(zx_input, "Norm")
-    zx_error = getFloatValueFromFileText(zx_input, "NormError")
+    
+    zjets_data = ZjetsData(year, channel, "../")
+    zx_value = zjets_data.getValue("Norm")
+    zx_error = zjets_data.getValue("NormError")
     zx_lnN_param = 1 + zx_error/zx_value
     file.write(str(zx_lnN_param) +'\n')
 
@@ -559,9 +562,9 @@ def createDatacard_ggH(obsName, channel, nBins, obsBin, observableBins, physical
     # for i in range(nBins+4): # All except ZX
     for i in range(2*nBins+4): # All except ZX
         file.write('- ')
-    zx_input = getZjets_txt(year, channel, "../")
-    zx_value = getFloatValueFromFileText(zx_input, "Norm")
-    zx_error = getFloatValueFromFileText(zx_input, "NormError")
+    zjets_data = ZjetsData(year, channel, "../")
+    zx_value = zjets_data.getValue("Norm")
+    zx_error = zjets_data.getValue("NormError")
     zx_lnN_param = 1 + zx_error/zx_value
     file.write(str(zx_lnN_param) +'\n')
 
