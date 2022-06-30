@@ -1,7 +1,6 @@
 import os,sys
 from paths import *
 from ZjetsSIP import *
-from repo.helperstuff.ZjetsSIP import ZjetsRoofitObjects
 
 
 def fixJes(jesnp):
@@ -288,6 +287,11 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     zx_error = zjets_data.getValue("NormError")
     zx_lnN_param = 1 + zx_error/zx_value
     file.write(str(zx_lnN_param) +'\n')
+
+    #ZX shape uncertainty
+    #uncertainties on the two parameters of the Landau
+    file.write('bkg_zjets_' + channel + '_landau_locationParam_' + year + ' param '+ str(zjets_data.getValue('locationParameter')) + ' ' + str(zjets_data.getValue('locationParameterError'))+'\n')
+    file.write('bkg_zjets_' + channel + '_landau_scaleParam_' + year + ' param '+ str(zjets_data.getValue('scaleParameter')) + ' ' + str(zjets_data.getValue('scaleParameterError'))+'\n')
 
     # Param
     if(channelNumber != 2):

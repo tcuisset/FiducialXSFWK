@@ -37,3 +37,10 @@ class ZjetsRoofitObjects:
         #landauScale.setError(getFloatValueFromFileText(file_data, "scaleParameterError"))
 
         self.zjets_pdf = ROOT.RooLandau("bkg_zjets", "Landau for Z+jets bkg", m4l_mass, self.landauLocation, self.landauScale)
+
+def getAllZXShapeNuisances(years):
+    nuisances_names = []
+    for year in years:
+        for channel in ['4e', '4mu', '2e2mu']:
+            nuisances_names.append('bkg_zjets_' + channel + '_landau_locationParam_' + year)
+    return nuisances_names
