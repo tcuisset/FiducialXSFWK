@@ -776,7 +776,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
 
     #####   ---  Load Z+jets shape and normalization
     os.chdir('../../../')
-    zjets_data = ZjetsData(year, channel)
+    #Do not forget to convert the 2e2mu(FiducialXS) channel to correct SIP method channel
+    zjets_data = ZjetsData(year, convertFiducialXSChannelToSipChannel(channel))
     zjets_roofit_objects = ZjetsRoofitObjects(zjets_data, m)
 
 

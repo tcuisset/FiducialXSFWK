@@ -1,7 +1,6 @@
 import os,sys
 from paths import *
 from ZjetsSIP import *
-from repo.helperstuff.ZjetsSIP import ZjetsRoofitObjects
 
 
 def fixJes(jesnp):
@@ -277,17 +276,42 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
             file.write(eff_e[year+'_'+channel]+' ')
         file.write('-\n') # ZX
 
-    # ZX Normalization uncertainty
-    file.write('CMS_hzz'+channel+'_Zjets_'+year+' lnN ')
-    # for i in range(nBins+4): # All except ZX
-    for i in range(nBins+4): # All except ZX
-        file.write('- ')
-    
-    zjets_data = ZjetsData(year, channel, "../")
-    zx_value = zjets_data.getValue("Norm")
-    zx_error = zjets_data.getValue("NormError")
-    zx_lnN_param = 1 + zx_error/zx_value
-    file.write(str(zx_lnN_param) +'\n')
+    # ZX Normalization uncertainty using SIP method
+    # The SIP method uses 2P2Lss control region using two channels : 2X2e (=4e + 2mu2e) and 2X2mu (=4mu + 2e2mu)
+    # where 2e2mu and 2mu2e are different channels
+    # Therefore the 2e2mu(FiducialXS) channel corresponds to 2e2mu+2mu2e(SIP method) 
+    if channel == '4mu' or channel == '4e':
+        # Simple case : uncertainty only comes from one SIP channel :
+        if channel == '4mu':
+            combinedSIPChannel = '2X2mu'
+        else:
+            combinedSIPChannel = '2X2e'
+
+        file.write('CMS_hzz'+combinedSIPChannel+'_Zjets_'+year+' lnN ')
+        for i in range(nBins+4): # All except ZX
+            file.write('- ')
+
+        zjets_data = ZjetsData(year, channel, "../")
+        zx_value = zjets_data.getValue("Norm")
+        zx_error = zjets_data.getValue("NormError")
+        zx_lnN_param = 1 + zx_error/zx_value
+        file.write(str(zx_lnN_param) +'\n')
+
+    elif channel == '2e2mu':
+        #Complicated case : Z+X estimation in 2e2mu(FiducialXS channel) comes from sum of Z+X in 2e2mu and 2mu2e (SIP channels)
+        # so two sources of uncertainties
+        zjets_data_2e2mu = ZjetsData(year, '2e2mu', "../")
+        file.write('CMS_hzz2X2mu_Zjets_'+year+' lnN ')
+        for i in range(nBins+4): # All except ZX
+            file.write('- ')
+        file.write(str(1 + zjets_data_2e2mu.getValue("NormError")/zjets_data_2e2mu.getValue("Norm"))+'\n')
+
+        zjets_data_2mu2e = ZjetsData(year, '2mu2e', "../")
+        file.write('CMS_hzz2X2e_Zjets_'+year+' lnN ')
+        for i in range(nBins+4): # All except ZX
+            file.write('- ')
+        file.write(str(1 + zjets_data_2mu2e.getValue("NormError")/zjets_data_2mu2e.getValue("Norm"))+'\n')
+
 
     # Param
     if(channelNumber != 2):

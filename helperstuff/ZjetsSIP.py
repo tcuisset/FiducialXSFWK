@@ -10,7 +10,15 @@ def getZjets_txt(year, channel, pathPrefix=""):
     with open(getPathToZjetsInput(year, channel, pathPrefix)) as f:
         return f.read()
 
-#Holds Z+jets configuration read from file, for a given year and channel
+#SIP method separates 2e2mu and 2mu2e channels
+#The 2e2mu channel of FiducialXS is known as 2e2mu-2mu2e
+def convertFiducialXSChannelToSipChannel(channelFiducialXS):
+    if channelFiducialXS == '2e2mu':
+        return '2e2mu-2mu2e'
+    else:
+        return channelFiducialXS
+
+#Holds Z+jets configuration read from file, for a given year and SIP method channel
 class ZjetsData:
     def __init__(self, year, channel, pathPrefix=""):
         self.year = year
@@ -37,3 +45,11 @@ class ZjetsRoofitObjects:
         #landauScale.setError(getFloatValueFromFileText(file_data, "scaleParameterError"))
 
         self.zjets_pdf = ROOT.RooLandau("bkg_zjets", "Landau for Z+jets bkg", m4l_mass, self.landauLocation, self.landauScale)
+
+
+def getAllZXNormNuisances(years):
+    nuisances_names = []
+    for year in years:
+        for channel in ['2X2e', '2X2mu']:
+            nuisances_names.append('CMS_hzz' + channel + '_Zjets_' + year)
+    return nuisances_names 
