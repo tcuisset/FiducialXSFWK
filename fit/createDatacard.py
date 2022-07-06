@@ -35,6 +35,7 @@ def fixJes(jesnp):
             '''
             return jesnp
 
+#nBins is the number of observableBins
 def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalModel, year, nData, jes, lowerBound, upperBound, yearSetting):
     # Name of the bin (aFINALSTATE_ recobinX)
     if(channel == '4mu'): channelNumber = 1
@@ -45,6 +46,13 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     # ZZfloating
     if 'zzfloating' in obsName: zzfloating = True
     else: zzfloating = False
+
+    zjetsHelper = ZjetsDatacardHelper(year, channel)
+    zjetsHelper.pathPrefix = '../'
+
+    #OutsideAcceptance, fakeH, bkg_ggzz, bkg_qqzz and two processes for Zjets (bkg_zjets_2X2e and bkg_zjets_2X2mu)
+    nBackgroundBins = 4 + 2
+
 
     # # _recobin = str(observableBins[obsBin]).replace('.', 'p') + '_' + str(observableBins[obsBin+1]).replace('.', 'p')
     # _recobin = str(observableBins[obsBin]).replace('.', 'p')+'_'+str(observableBins[obsBin+1]).replace('.', 'p')
@@ -131,19 +139,6 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     eff_e['2018_2e2mu'] = '0.95/1.052'
     eff_e['2018_4e'] = '0.905/1.077'
 
-    # ZX
-    ZX = {}
-    ZX['2016_2e2mu'] = '0.756295/1.25114'
-    ZX['2016_4e'] = '0.598182/1.43059'
-    ZX['2016_4mu'] = '0.694678/1.30555'
-    ZX['2017_2e2mu'] = '0.765736/1.236385'
-    ZX['2017_4e'] = '0.646521/1.36398'
-    ZX['2017_4mu'] = '0.694063/1.30623'
-    ZX['2018_2e2mu'] = '0.7660052/1.235647'
-    ZX['2018_4e'] = '0.650486/1.35893'
-    ZX['2018_4mu'] = '0.69554/1.30465'
-
-
     # -------------------------------------------------------------------------------------------------
 
     file = open('../datacard/datacard_'+year+'/hzz4l_'+channel+'S_13TeV_xs_'+_obsName[obsName]+'_bin'+str(obsBin)+'_'+physicalModel+'.txt', 'w+')
@@ -164,8 +159,8 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     file.write('------------ \n')
     file.write('## mass window ['+str(lowerBound)+','+str(upperBound)+']\n')
     file.write('bin ')
-    # for i in range(nBins+5): # In addition to the observableBins, there are OutsideAcceptance, fakeH, bkg_ggzz, bkg_qqzz, bkg_zjets
-    for i in range(nBins+5):
+    # for i in range(nBins+5): # In addition to the observableBins, there are OutsideAcceptance, fakeH, bkg_ggzz, bkg_qqzz, and one or two bkg_zjets_*
+    for i in range(nBins+nBackgroundBins):
         file.write(binName+' ')
     file.write('\n')
     file.write('process ')
@@ -177,30 +172,38 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
                 file.write(processName+'_GT'+str(int(observableBins[i]))+' ')
             else:
                 file.write(processName+'_'+str(observableBins[i]).replace('.', 'p').replace('-','m')+'_'+str(observableBins[i+1]).replace('.', 'p').replace('-','m')+' ')
-        file.write('OutsideAcceptance nonResH bkg_qqzz bkg_ggzz bkg_zjets')
+        file.write('OutsideAcceptance nonResH bkg_qqzz bkg_ggzz '+ ' '.join(zjetsHelper.getListOfProcessNames()))
     else:
         for i in range(nBins):
             file.write(processName+str(i)+' ')
-        file.write('out_trueH fakeH bkg_qqzz bkg_ggzz bkg_zjets')
-    #file.write('nonResH bkg_qqzz bkg_ggzz bkg_zjets')
+        file.write('out_trueH fakeH bkg_qqzz bkg_ggzz '+ ' '.join(zjetsHelper.getListOfProcessNames()))
+    
     file.write('\n')
     file.write('process ')
     for i in range(nBins):
         file.write('-'+str(i+1)+' ')
-    # file.write('1 2 3 4 5')
-    file.write('1 2 3 4 5')
+    # number background processes from 1 to 5 (or 6)
+    for i in range(nBackgroundBins):
+        file.write(str(i+1) + ' ')
     file.write('\n')
+
+    #---- Writing rate numbers for each processes
     file.write('rate ')
-    # for i in range(nBins+2): # In addition to the observableBins, there are OutsideAcceptance, fakeH
+    #Write 1.0 for   the observableBins, as well as OutsideAcceptance, fakeH
     for i in range(nBins+2):
         file.write('1.0 ')
+    
+    #Reducible background : 
     if zzfloating:
-        file.write('1 1 '+str(expected_yield[int(year),'ZX',channel])+'\n')
+        file.write('1 1 ')
     else:
-        #Now Z+X background normalization is done using bkg_zjets_norm in the workspace
-        #file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+str(expected_yield[int(year),'ZX',channel])+'\n')
-        file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' '+'1'+'\n')
+        file.write(str(expected_yield[int(year),'qqzz',channel])+' '+str(expected_yield[int(year),'ggzz',channel])+' ')
+    
+    #Z+jets
+    file.write(' '.join(zjetsHelper.getRates()) + '\n')
+
     file.write('------------ \n')
+    #-------- Nuisances, rateParams, etc
 
     if zzfloating:
         # rateParam qqZZ floating
@@ -211,7 +214,10 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     # for i in range(nBins+1): # Signal + OutsideAcceptance
     for i in range(nBins+1): # Signal + OutsideAcceptance
         file.write('- ')
-    file.write('10.0 - - -    # [/10,*10]\n')
+    file.write('10.0 ') #fakeH
+    for i in range(nBackgroundBins - 2):
+        file.write('- ')
+    file.write('# [/10,*10]\n')
 
     if yearSetting == 'Full':
         if zzfloating:
@@ -219,48 +225,64 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
             file.write('lumi_13TeV_'+year+'_uncorrelated lnN ')
             for i in range(nBins+2): # signals + out + fake
                 file.write(lumi[year]+' ')
-            file.write('- - -\n') # qqzz + ggzz + ZX
+            for i in range(nBackgroundBins-2):
+                file.write('- ') # qqzz + ggzz + ZX
+            file.write('\n')
             # lumi_correlated_16_17_18
             file.write('lumi_13TeV_correlated_16_17_18 lnN ')
             for i in range(nBins+2): # signals + out + fake
                 file.write(lumi_corr_16_17_18[year]+' ')
-            file.write('- - -\n') # qqzz + ggzz + ZX
+            for i in range(nBackgroundBins-2):
+                file.write('- ') # qqzz + ggzz + ZX
+            file.write('\n')
             # lumi_correlated_17_18
             if year == '2017' or year == '2018':
                 file.write('lumi_13TeV_correlated_17_18 lnN ')
                 for i in range(nBins+2): # signals + out + fake
                     file.write(lumi_corr_17_18[year]+' ')
-                file.write('- - -\n') # qqzz + ggzz + ZX
+                for i in range(nBackgroundBins-2):
+                    file.write('- ') # qqzz + ggzz + ZX
+                file.write('\n')
         else:
             # lumi_uncorrelated
             file.write('lumi_13TeV_'+year+'_uncorrelated lnN ')
             for i in range(nBins+4): # All except ZX
                 file.write(lumi[year]+' ')
-            file.write('-\n') # ZX
+            for i in range(zjetsHelper.getNumberOfProcesses()):
+                file.write('- ') # ZX
+            file.write('\n')
             # lumi_correlated_16_17_18
             file.write('lumi_13TeV_correlated_16_17_18 lnN ')
             for i in range(nBins+4): # All except ZX
                 file.write(lumi_corr_16_17_18[year]+' ')
-            file.write('-\n') # ZX
+            for i in range(zjetsHelper.getNumberOfProcesses()):
+                file.write('- ') # ZX
+            file.write('\n')
             # lumi_correlated_17_18
             if year == '2017' or year == '2018':
                 file.write('lumi_13TeV_correlated_17_18 lnN ')
                 for i in range(nBins+4): # All except ZX
                     file.write(lumi_corr_17_18[year]+' ')
-                file.write('-\n') # ZX
+                for i in range(zjetsHelper.getNumberOfProcesses()):
+                    file.write('- ') # ZX
+                file.write('\n')
     else:
         if zzfloating:
             # lumi
             file.write('lumi_13TeV_'+year+' lnN ')
             for i in range(nBins+2): # signals + out + fake
                 file.write(lumi[year]+' ')
-            file.write('- - -\n') # qqzz + ggzz + ZX
+            for i in range(nBackgroundBins-2):
+                file.write('- ') # qqzz + ggzz + ZX
+            file.write('\n')
         else:
             # lumi
             file.write('lumi_13TeV_'+year+' lnN ')
             for i in range(nBins+4): # All except ZX
                 file.write(lumi[year]+' ')
-            file.write('-\n') # ZX
+            for i in range(zjetsHelper.getNumberOfProcesses()):
+                file.write('- ') # ZX
+            file.write('\n')
 
     # Lepton efficiency
     if channel == '4mu' or channel == '2e2mu':
@@ -268,50 +290,46 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
         # for i in range(nBins+4): # All except ZX
         for i in range(nBins+4): # All except ZX
             file.write(eff_mu[year+'_'+channel]+' ')
-        file.write('-\n') # ZX
+        for i in range(zjetsHelper.getNumberOfProcesses()):
+            file.write('- ') # ZX
+        file.write('\n')
     if channel == '4e' or channel == '2e2mu':
         file.write('CMS_eff_e lnN ')
         # for i in range(nBins+4): # All except ZX
         for i in range(nBins+4): # All except ZX
             file.write(eff_e[year+'_'+channel]+' ')
-        file.write('-\n') # ZX
+        for i in range(zjetsHelper.getNumberOfProcesses()):
+            file.write('- ') # ZX
+        file.write('\n')
 
     # ZX Normalization uncertainty using SIP method
     # The SIP method uses 2P2Lss control region using two channels : 2X2e (=4e + 2mu2e) and 2X2mu (=4mu + 2e2mu)
     # where 2e2mu and 2mu2e are different channels
     # Therefore the 2e2mu(FiducialXS) channel corresponds to 2e2mu+2mu2e(SIP method) 
-    if channel == '4mu' or channel == '4e':
-        # Simple case : uncertainty only comes from one SIP channel :
-        if channel == '4mu':
-            combinedSIPChannel = '2X2mu'
+    #There are different nuisances :
+    # - one ratio nuisance correlated for all channels and all years, for the uncertainty on composition between same sign and opposite sign regions
+    # - one nuisance for 2X2e and 2X2mu for each year, representing uncertainty coming from fit and statistical uncertainty on ratio not included in previous nuisance
+
+    #nuisance for ratio systematic
+    file.write('CMS_zz4l_Zjets_ratio_systematic lnN ')
+    for i in range(nBins+4): # All except ZX
+        file.write('- ')
+    for i in range(zjetsHelper.getNumberOfProcesses()):
+        file.write(str(1 + zjetsHelper.getRatioSystematicRelativeUncertainty()) + ' ')
+    file.write('\n')
+    
+    #nuisances for 2X2e and 2X2mu
+    for mergedChannel in ['2X2e', '2X2mu']:
+        file.write('CMS_zz4l_Zjets_' + year + '_' + mergedChannel + ' lnN ')
+        for i in range(nBins+4): #all except Z+X
+            file.write('- ')
+        
+        if (mergedChannel == '2X2e'):
+            #                         2X2e                            2X2mu
+            file.write(zjetsHelper.getNuisanceValues(mergedChannel) + ' -')
         else:
-            combinedSIPChannel = '2X2e'
-
-        file.write('CMS_hzz'+combinedSIPChannel+'_Zjets_'+year+' lnN ')
-        for i in range(nBins+4): # All except ZX
-            file.write('- ')
-
-        zjets_data = ZjetsData(year, channel, "../")
-        zx_value = zjets_data.getValue("Norm")
-        zx_error = zjets_data.getValue("NormError")
-        zx_lnN_param = 1 + zx_error/zx_value
-        file.write(str(zx_lnN_param) +'\n')
-
-    elif channel == '2e2mu':
-        #Complicated case : Z+X estimation in 2e2mu(FiducialXS channel) comes from sum of Z+X in 2e2mu and 2mu2e (SIP channels)
-        # so two sources of uncertainties
-        zjets_data_2e2mu = ZjetsData(year, '2e2mu', "../")
-        file.write('CMS_hzz2X2mu_Zjets_'+year+' lnN ')
-        for i in range(nBins+4): # All except ZX
-            file.write('- ')
-        file.write(str(1 + zjets_data_2e2mu.getValue("NormError")/zjets_data_2e2mu.getValue("Norm"))+'\n')
-
-        zjets_data_2mu2e = ZjetsData(year, '2mu2e', "../")
-        file.write('CMS_hzz2X2e_Zjets_'+year+' lnN ')
-        for i in range(nBins+4): # All except ZX
-            file.write('- ')
-        file.write(str(1 + zjets_data_2mu2e.getValue("NormError")/zjets_data_2mu2e.getValue("Norm"))+'\n')
-
+            file.write('- ' + zjetsHelper.getNuisanceValues(mergedChannel))
+        file.write('\n')
 
     # Param
     if(channelNumber != 2):
@@ -328,23 +346,23 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
         file.write('QCDscale_ggVV lnN ')
         for i in range(nBins+3): # Signal + out + fake + qqzz
             file.write('- ')
-        file.write('1.039/0.961 -\n')
+        file.write('1.039/0.961 - -\n') #bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
         file.write('QCDscale_VV lnN ')
         for i in range(nBins+2): # Signal + out + fake
             file.write('- ')
-        file.write('1.0325/0.958 - -\n')
+        file.write('1.0325/0.958 - - - \n') #bkg_qqzz + bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
         file.write('pdf_gg lnN ')
         for i in range(nBins+3): # Signal + out + fake + qqzz
             file.write('- ')
-        file.write('1.032/0.968 -\n')
+        file.write('1.032/0.968 - - \n') #bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
         file.write('pdf_qqbar lnN ')
         for i in range(nBins+2): # Signal + out + fake
             file.write('- ')
-        file.write('1.031/0.966 - -\n')
+        file.write('1.031/0.966 - - -\n') #bkg_qqzz + bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
         file.write('kfactor_ggzz lnN ')
         for i in range(nBins+3): # Signal + out + fake  + bkg_qqzz
             file.write('- ')
-        file.write('1.1 -\n')
+        file.write('1.1 - -\n') #bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
 
     # JES
     if jes == True:
@@ -582,15 +600,7 @@ def createDatacard_ggH(obsName, channel, nBins, obsBin, observableBins, physical
         file.write('-\n') # ZX
 
     # ZX
-    file.write('CMS_hzz'+channel+'_Zjets_'+year+' lnN ')
-    # for i in range(nBins+4): # All except ZX
-    for i in range(2*nBins+4): # All except ZX
-        file.write('- ')
-    zjets_data = ZjetsData(year, channel, "../")
-    zx_value = zjets_data.getValue("Norm")
-    zx_error = zjets_data.getValue("NormError")
-    zx_lnN_param = 1 + zx_error/zx_value
-    file.write(str(zx_lnN_param) +'\n')
+    assert False, "Z+X not yet implemented"
 
     # Param
     if(channelNumber != 2):
