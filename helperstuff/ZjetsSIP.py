@@ -1,14 +1,8 @@
 import re
 import ROOT
+import collections
 
-
-
-def getPathToZjetsInput(year, channel, pathPrefix=""):
-    return pathPrefix + "zjets_wp/" + year + "/bkg_zjets_" + channel + ".txt"
-
-def getZjets_txt(year, channel, pathPrefix=""):
-    with open(getPathToZjetsInput(year, channel, pathPrefix)) as f:
-        return f.read()
+ValueErrorTuple = collections.namedtuple('ValueErrorTuple', ['value', 'error'])
 
 #SIP method separates 2e2mu and 2mu2e channels
 #The 2e2mu channel of FiducialXS is known as 2e2mu-2mu2e
@@ -18,37 +12,53 @@ def convertFiducialXSChannelToSipChannel(channelFiducialXS):
     else:
         return channelFiducialXS
 
-#Holds Z+jets configuration read from file, for a given year and SIP method channel
+#Holds Z+jets configuration read from file, for a given year
 class ZjetsData:
-    def __init__(self, year, channel, pathPrefix=""):
+    def __init__(self, year, pathPrefix=""):
         self.year = year
-        self.channel = channel
-        self.txt_file_content = getZjets_txt(year, channel, pathPrefix)
+        with open(pathPrefix + "ZX_estimation/" + year + "/ZX_SIP_method_results.txt") as f:
+            self.txt_file_content = f.read()
     
     def getValue(self, key):
-        regex = r"^" + key + r" = ([0-9\.]+)$"
+        regex = r"^" + key + r" = ([0-9\.]+)$" #Match begining of line then key then " = " then a number then end of line
         match = re.search(regex, self.txt_file_content, re.MULTILINE)
         return float(match.group(1)) # return the parenthesis match which should be the float value we want
     
+    """Returns tuple (value, error) for Z+X estimation for given SIP method channel. 2e2mu and 2mu2e are speparate channels"""
+    def getNormCorrected(self, channel):
+        return ValueErrorTuple(self.getValue("NormCorrected_" + channel), self.getValue("NormCorrectedError_" + channel))
+    
+    """Return relative error on tight inclusive ratio, for nuisance of ratio correlated across channels"""
+    def getRatioTightInclusiveRelativeError(self):
+        return self.getValue("RatioTightInclusive_relativeError")
+    
+    """Get location parameter of Landau for Z+X shape. Retrun tuple (value, error)"""
+    def getShapeLocationParameter(self, channel):
+        return ValueErrorTuple(self.getValue("Shape_locationParameter_" + channel), self.getValue("Shape_locationParameterError_" + channel))
+    
+    def getShapeWidthParameter(self, channel):
+        return ValueErrorTuple(self.getValue("Shape_widthParameter_" + channel), self.getValue("Shape_widthParameterError_" + channel))
 
 
 #Holds RooFit objects used for Z+jets shape and normalization
 class ZjetsRoofitObjects:
     
     """ data is Zjets_data object, m4l_mass is a RooRealVar 
+    mergedChannelName is either 2X2e or 2X2mu, used for naming the shape parameters
+    shapeChannel is the individual channel name (2e2mu and 2mu2e are different) used to extract the shape
     """
-    def __init__(self, data, m4l_mass, mergedChannelName): 
+    def __init__(self, data, m4l_mass, mergedChannelName, shapeChannel): 
         self.landauLocationParamName = "bkg_zjets_" + mergedChannelName + "_" + data.year + "_landau_locationParam"
         self.landauShapeParamName = "bkg_zjets_" + mergedChannelName + "_" + data.year + "_landau_scaleParam"
         #bkg_zjets_norm is not used anymore
         #self.zjets_norm = ROOT.RooRealVar("bkg_zjets_norm", "Normalization of Z+jets background", data.getValue("Norm"))
         #zjets_norm.setError(getFloatValueFromFileText(file_data, "NormError"))
 
-        self.landauLocation = ROOT.RooRealVar(self.landauLocationParamName, "Z+jets Landau location parameter", data.getValue("locationParameter"))
-        #landauLocation.setError(getFloatValueFromFileText(file_data, "locationParameterError"))
+        self.landauLocation = ROOT.RooRealVar(self.landauLocationParamName, "Z+jets Landau location parameter", data.getShapeLocationParameter(shapeChannel).value)
+        #landauLocation.setError( data.getShapeLocationParameter(shapeChannel)[1])
 
-        self.landauScale = ROOT.RooRealVar(self.landauShapeParamName, "Z+jets Landau scale parameter", data.getValue("scaleParameter"))
-        #landauScale.setError(getFloatValueFromFileText(file_data, "scaleParameterError"))
+        self.landauScale = ROOT.RooRealVar(self.landauShapeParamName, "Z+jets Landau scale parameter", data.getShapeWidthParameter(shapeChannel).value)
+        #landauScale.setError(data.getShapeWidthParameter(shapeChannel)[1])
 
         self.zjets_pdf = ROOT.RooLandau("bkg_zjets_"+mergedChannelName, "Landau for Z+jets bkg, "+mergedChannelName, m4l_mass, self.landauLocation, self.landauScale)
 
@@ -62,12 +72,11 @@ def getAllZXNormNuisances(years):
 
 class ZjetsDatacardHelper:
     #xsecChannel is the channel used for fiducial cross-section, ie 2e2mu is merged
-    def __init__(self, year, xsecChannel):
+    def __init__(self, year, xsecChannel, zjetsData):
         self.year = year
         self.channel = xsecChannel
         self.pathPrefix = ''
-
-   
+        self.zjetsData = zjetsData
     
     #Return the list of processes 
     def getListOfProcessNames(self):
@@ -80,24 +89,20 @@ class ZjetsDatacardHelper:
 
     def getRates(self):
         if (self.channel == '4mu' or self.channel == '4e'):
-            data = ZjetsData(self.year, self.channel, self.pathPrefix)
             if (self.channel == '4mu'):
                 #       2X2e   2X2mu
-                return ['0', str(data.getValue('Norm'))]
+                return ['0', str(self.zjetsData.getNormCorrected(self.channel).value)]
             else:
-                #       2X2e                        2X2mu
-                return [str(data.getValue('Norm')), '0']
+                #                           2X2e                           2X2mu
+                return [str(self.zjetsData.getNormCorrected(self.channel).value), '0']
         elif (self.channel == '2e2mu'):
             #2e2mu is merged from 2e2mu(SIP method) and 2mu2e(SIP method) therefore two processes : bkg_zjets_2X2mu AND bkg_zjets_2X2e
-           data_2e2mu = ZjetsData(self.year, '2e2mu', self.pathPrefix)
-           data_2mu2e = ZjetsData(self.year, '2mu2e', self.pathPrefix)
-           #order matters
-           return [str(data_2mu2e.getValue('Norm')), str(data_2e2mu.getValue('Norm'))]
+            #order matters :                            2X2e                                            2X2mu                   
+            return [str(self.zjetsData.getNormCorrected('2mu2e').value), str(self.zjetsData.getNormCorrected('2e2mu').value)]
     
     #Get the relative uncertainty for ratio systematic
     def getRatioSystematicRelativeUncertainty(self):
-        #TODO
-        return 0.4
+        return self.zjetsData.getRatioTightInclusiveRelativeError()
     
     #return the value to put for the nuisance for the datacard as a string ('-' if no impact)
     def getNuisanceValues(self, mergedChannel):
@@ -114,12 +119,11 @@ class ZjetsDatacardHelper:
             #2e2mu or 4mu : no change needed
         else:
             assert False
-        
-        data = ZjetsData(self.year, singleSIPChannel, self.pathPrefix)
 
-        result = 1 + data.getValue('NormErrorRatioStatOnly')/data.getValue('Norm')
+        (norm_value, norm_error) = self.zjetsData.getNormCorrected(singleSIPChannel)
+        #norm_error is the statistical error on Loose+ID+ISO ratio
 
-        return str(result)
+        return str(1 +  norm_error/norm_value)
                 
 
 

@@ -779,16 +779,16 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
     # Z+jets has two processes , bkg_zjets_2X2e and bkg_zjets_2X2mu
     # 4e channel only uses bkg_zjets_2X2e, and 4mu only uses bkg_zjets_2X2mu (rate for the other process is zero)
     # However 2e2mu uses both, each with a different shape (so total shape is sum of two Landaus, one for 2e2mu(SIP method) and one for 2mu2e(SIP method))
-
     zjets_roofit_objects_2X2e = None
     zjets_roofit_objects_2X2mu = None
+    zjets_data = ZjetsData(year)
     if (channel == '4e'):
-        zjets_roofit_objects_2X2e = ZjetsRoofitObjects(ZjetsData(year, channel), m, '2X2e')
+        zjets_roofit_objects_2X2e = ZjetsRoofitObjects(zjets_data, m, '2X2e', channel)
     elif (channel == '4mu'):
-        zjets_roofit_objects_2X2mu = ZjetsRoofitObjects(ZjetsData(year, channel), m, '2X2mu')
+        zjets_roofit_objects_2X2mu = ZjetsRoofitObjects(zjets_data, m, '2X2mu', channel)
     elif (channel == '2e2mu'):
-        zjets_roofit_objects_2X2mu = ZjetsRoofitObjects(ZjetsData(year, '2e2mu'), m, '2X2mu')
-        zjets_roofit_objects_2X2e = ZjetsRoofitObjects(ZjetsData(year, '2mu2e'), m, '2X2e')
+        zjets_roofit_objects_2X2mu = ZjetsRoofitObjects(zjets_data, m, '2X2mu', '2e2mu')
+        zjets_roofit_objects_2X2e = ZjetsRoofitObjects(zjets_data, m, '2X2e', '2mu2e')
 
     os.chdir('datacard/datacard_'+year)
 

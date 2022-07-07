@@ -47,8 +47,7 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     if 'zzfloating' in obsName: zzfloating = True
     else: zzfloating = False
 
-    zjetsHelper = ZjetsDatacardHelper(year, channel)
-    zjetsHelper.pathPrefix = '../'
+    zjetsHelper = ZjetsDatacardHelper(year, channel, ZjetsData(year, '../'))
 
     #OutsideAcceptance, fakeH, bkg_ggzz, bkg_qqzz and two processes for Zjets (bkg_zjets_2X2e and bkg_zjets_2X2mu)
     nBackgroundBins = 4 + 2
