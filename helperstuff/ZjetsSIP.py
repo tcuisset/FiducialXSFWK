@@ -2,6 +2,7 @@ import re
 import ROOT
 import collections
 
+#Tuple containing (value, error) with named fields
 ValueErrorTuple = collections.namedtuple('ValueErrorTuple', ['value', 'error'])
 
 #SIP method separates 2e2mu and 2mu2e channels
@@ -62,7 +63,7 @@ class ZjetsRoofitObjects:
 
         self.zjets_pdf = ROOT.RooLandau("bkg_zjets_"+mergedChannelName, "Landau for Z+jets bkg, "+mergedChannelName, m4l_mass, self.landauLocation, self.landauScale)
 
-
+#List of all Z+X nuisance names for given years
 def getAllZXNormNuisances(years):
     nuisances_names = ['CMS_zz4l_Zjets_ratio_systematic']
     for year in years:
