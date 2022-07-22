@@ -49,8 +49,8 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
 
     zjetsHelper = ZjetsDatacardHelper(year, channel, ZjetsData(year, '../'))
 
-    #OutsideAcceptance, fakeH, bkg_ggzz, bkg_qqzz and two processes for Zjets (bkg_zjets_2X2e and bkg_zjets_2X2mu)
-    nBackgroundBins = 4 + 2
+    #OutsideAcceptance, fakeH, bkg_ggzz, bkg_qqzz and Zjets processes
+    nBackgroundBins = 4 + zjetsHelper.getNumberOfProcesses()
 
 
     # # _recobin = str(observableBins[obsBin]).replace('.', 'p') + '_' + str(observableBins[obsBin+1]).replace('.', 'p')
@@ -305,30 +305,10 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
     # The SIP method uses 2P2Lss control region using two channels : 2X2e (=4e + 2mu2e) and 2X2mu (=4mu + 2e2mu)
     # where 2e2mu and 2mu2e are different channels
     # Therefore the 2e2mu(FiducialXS) channel corresponds to 2e2mu+2mu2e(SIP method) 
-    #There are different nuisances :
-    # - one ratio nuisance correlated for all channels and all years, for the uncertainty on composition between same sign and opposite sign regions
-    # - one nuisance for 2X2e and 2X2mu for each year, representing uncertainty coming from fit and statistical uncertainty on ratio not included in previous nuisance
 
-    #nuisance for ratio systematic
-    file.write('CMS_zz4l_Zjets_ratio_systematic lnN ')
-    for i in range(nBins+4): # All except ZX
-        file.write('- ')
-    for i in range(zjetsHelper.getNumberOfProcesses()):
-        file.write(str(1 + zjetsHelper.getRatioSystematicRelativeUncertainty()) + ' ')
-    file.write('\n')
-    
-    #nuisances for 2X2e and 2X2mu
-    for mergedChannel in ['2X2e', '2X2mu']:
-        file.write('CMS_zz4l_Zjets_' + year + '_' + mergedChannel + ' lnN ')
-        for i in range(nBins+4): #all except Z+X
-            file.write('- ')
-        
-        if (mergedChannel == '2X2e'):
-            #                         2X2e                            2X2mu
-            file.write(zjetsHelper.getNuisanceValues(mergedChannel) + ' -')
-        else:
-            file.write('- ' + zjetsHelper.getNuisanceValues(mergedChannel))
-        file.write('\n')
+    #Rateparam for floating Zjets
+    file.write('zx_floating_rateparam_' + channel + '_' + year + ' rateParam ' + binName + ' bkg_zjets 1 [0,300]\n')
+
 
     # Param
     if(channelNumber != 2):
@@ -345,23 +325,23 @@ def createDatacard(obsName, channel, nBins, obsBin, observableBins, physicalMode
         file.write('QCDscale_ggVV lnN ')
         for i in range(nBins+3): # Signal + out + fake + qqzz
             file.write('- ')
-        file.write('1.039/0.961 - -\n') #bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
+        file.write('1.039/0.961 - \n') #bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
         file.write('QCDscale_VV lnN ')
         for i in range(nBins+2): # Signal + out + fake
             file.write('- ')
-        file.write('1.0325/0.958 - - - \n') #bkg_qqzz + bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
+        file.write('1.0325/0.958 - -  \n') #bkg_qqzz + bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
         file.write('pdf_gg lnN ')
         for i in range(nBins+3): # Signal + out + fake + qqzz
             file.write('- ')
-        file.write('1.032/0.968 - - \n') #bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
+        file.write('1.032/0.968 -  \n') #bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
         file.write('pdf_qqbar lnN ')
         for i in range(nBins+2): # Signal + out + fake
             file.write('- ')
-        file.write('1.031/0.966 - - -\n') #bkg_qqzz + bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
+        file.write('1.031/0.966 - - \n') #bkg_qqzz + bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
         file.write('kfactor_ggzz lnN ')
         for i in range(nBins+3): # Signal + out + fake  + bkg_qqzz
             file.write('- ')
-        file.write('1.1 - -\n') #bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
+        file.write('1.1 - \n') #bkg_ggzz + bkg_zjetx_2X2e + bkg_zjets_2X2mu
 
     # JES
     if jes == True:

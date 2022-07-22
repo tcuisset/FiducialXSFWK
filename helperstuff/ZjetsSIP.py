@@ -61,15 +61,16 @@ class ZjetsRoofitObjects:
         self.landauScale = ROOT.RooRealVar(self.landauShapeParamName, "Z+jets Landau scale parameter", data.getShapeWidthParameter(shapeChannel).value)
         #landauScale.setError(data.getShapeWidthParameter(shapeChannel)[1])
 
-        self.zjets_pdf = ROOT.RooLandau("bkg_zjets_"+mergedChannelName, "Landau for Z+jets bkg, "+mergedChannelName, m4l_mass, self.landauLocation, self.landauScale)
+        self.zjets_pdf = ROOT.RooLandau("bkg_zjets", "Landau for Z+jets bkg, "+mergedChannelName, m4l_mass, self.landauLocation, self.landauScale)
 
 #List of all Z+X nuisance names for given years
 def getAllZXNormNuisances(years):
-    nuisances_names = ['CMS_zz4l_Zjets_ratio_systematic']
-    for year in years:
-        for mergedChannel in ['2X2e', '2X2mu']:
-            nuisances_names.append('CMS_zz4l_Zjets_' + year + '_' + mergedChannel)
-    return nuisances_names 
+    return []
+    # nuisances_names = ['CMS_zz4l_Zjets_ratio_systematic']
+    # for year in years:
+    #     for mergedChannel in ['2X2e', '2X2mu']:
+    #         nuisances_names.append('CMS_zz4l_Zjets_' + year + '_' + mergedChannel)
+    # return nuisances_names 
 
 class ZjetsDatacardHelper:
     #xsecChannel is the channel used for fiducial cross-section, ie 2e2mu is merged
@@ -82,24 +83,26 @@ class ZjetsDatacardHelper:
     #Return the list of processes 
     def getListOfProcessNames(self):
         #2e2mu is merged from 2e2mu(SIP method) and 2mu2e(SIP method) therefore two processes : bkg_zjets_2X2mu AND bkg_zjets_2X2e
-        return ['bkg_zjets_2X2e', 'bkg_zjets_2X2mu']
+        #return ['bkg_zjets_2X2e', 'bkg_zjets_2X2mu']
+        return ['bkg_zjets']
     
     #Number of background process bin for the channel
     def getNumberOfProcesses(self):
         return len(self.getListOfProcessNames())
 
     def getRates(self):
-        if (self.channel == '4mu' or self.channel == '4e'):
-            if (self.channel == '4mu'):
-                #       2X2e   2X2mu
-                return ['0', str(self.zjetsData.getNormCorrected(self.channel).value)]
-            else:
-                #                           2X2e                           2X2mu
-                return [str(self.zjetsData.getNormCorrected(self.channel).value), '0']
-        elif (self.channel == '2e2mu'):
-            #2e2mu is merged from 2e2mu(SIP method) and 2mu2e(SIP method) therefore two processes : bkg_zjets_2X2mu AND bkg_zjets_2X2e
-            #order matters :                            2X2e                                            2X2mu                   
-            return [str(self.zjetsData.getNormCorrected('2mu2e').value), str(self.zjetsData.getNormCorrected('2e2mu').value)]
+        return['1'] #Completely float Z+X
+        # if (self.channel == '4mu' or self.channel == '4e'):
+        #     if (self.channel == '4mu'):
+        #         #       2X2e   2X2mu
+        #         return ['0', str(self.zjetsData.getNormCorrected(self.channel).value)]
+        #     else:
+        #         #                           2X2e                           2X2mu
+        #         return [str(self.zjetsData.getNormCorrected(self.channel).value), '0']
+        # elif (self.channel == '2e2mu'):
+        #     #2e2mu is merged from 2e2mu(SIP method) and 2mu2e(SIP method) therefore two processes : bkg_zjets_2X2mu AND bkg_zjets_2X2e
+        #     #order matters :                            2X2e                                            2X2mu                   
+        #     return [str(self.zjetsData.getNormCorrected('2mu2e').value), str(self.zjetsData.getNormCorrected('2e2mu').value)]
     
     #Get the relative uncertainty for ratio systematic
     def getRatioSystematicRelativeUncertainty(self):

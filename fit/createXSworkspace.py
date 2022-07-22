@@ -776,19 +776,8 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
 
     #####   ---  Load Z+jets shape
     os.chdir('../../../')
-    # Z+jets has two processes , bkg_zjets_2X2e and bkg_zjets_2X2mu
-    # 4e channel only uses bkg_zjets_2X2e, and 4mu only uses bkg_zjets_2X2mu (rate for the other process is zero)
-    # However 2e2mu uses both, each with a different shape (so total shape is sum of two Landaus, one for 2e2mu(SIP method) and one for 2mu2e(SIP method))
-    zjets_roofit_objects_2X2e = None
-    zjets_roofit_objects_2X2mu = None
     zjets_data = ZjetsData(year)
-    if (channel == '4e'):
-        zjets_roofit_objects_2X2e = ZjetsRoofitObjects(zjets_data, m, '2X2e', channel)
-    elif (channel == '4mu'):
-        zjets_roofit_objects_2X2mu = ZjetsRoofitObjects(zjets_data, m, '2X2mu', channel)
-    elif (channel == '2e2mu'):
-        zjets_roofit_objects_2X2mu = ZjetsRoofitObjects(zjets_data, m, '2X2mu', '2e2mu')
-        zjets_roofit_objects_2X2e = ZjetsRoofitObjects(zjets_data, m, '2X2e', '2mu2e')
+    zjets_roofit_objects = ZjetsRoofitObjects(zjets_data, m, channel, channel)#TODO FIXME 2e2mu (SIP method) is different from 2e2mu-2mu2e (fiducial xsec)
 
     os.chdir('datacard/datacard_'+year)
 
@@ -981,13 +970,9 @@ def createXSworkspace(obsName, channel, nBins, obsBin, observableBins, addfakeH,
     getattr(wout,'import')(ggzzTemplatePdf,ROOT.RooFit.RecycleConflictNodes())
     getattr(wout,'import')(ggzz_norm,ROOT.RooFit.Silence())
 
-    if (zjets_roofit_objects_2X2e != None):
-        zjets_roofit_objects_2X2e.zjets_pdf.Print("v")
-        getattr(wout,'import')(zjets_roofit_objects_2X2e.zjets_pdf)
+    zjets_roofit_objects.zjets_pdf.Print("v")
+    getattr(wout,'import')(zjets_roofit_objects.zjets_pdf)
     
-    if (zjets_roofit_objects_2X2mu != None):
-        zjets_roofit_objects_2X2mu.zjets_pdf.Print("v")
-        getattr(wout,'import')(zjets_roofit_objects_2X2mu.zjets_pdf)
 
     ## data
     # getattr(wout,'import')(data_obs.reduce(ROOT.RooArgSet(m)),ROOT.RooFit.Silence()) #AT https://root-forum.cern.ch/t/rooworkspace-import-roofit-silence-does-not-work-when-importing-datasets/32591
